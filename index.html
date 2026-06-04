@@ -1,0 +1,2447 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Design Day — Master Marketing Pharma · Digilityx</title>
+
+<!-- Fonts : Sora (titres) + Inter (corps) + JetBrains Mono (eyebrow/labels) — design system Digilityx V2.
+     Caveat = police manuscrite, accent "atelier / feuille A4 au mur" pour la partie pratique. -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+/* =========================================================================
+   THEME — Tokens issus du DS Digilityx V2 (identiques à pharma-vision-strategique.html
+   et site-piloté-ia.html). Modifier ici change toute la présentation.
+   ========================================================================= */
+:root {
+  /* Couleurs marque */
+  --brand:           #da0c0c;
+  --brand-hover:     #ed0d0d;
+  --brand-fade:      #f9ecec;
+  --secondary:       #050d2d;
+  --bg:              #faf8f7;
+  --bg-soft:         #f4f1ee;
+  --text:            #3c3c3c;
+  --text-soft:       #6b6b6b;
+  --impact-green:    #20af86;
+  --impact-green-dk: #0a6e52;
+  --impact-fade:     #daf1e4;
+  --accent-yellow:   #fdca48;
+  --accent-strong:   #fdc100;
+  --line:            rgba(5, 13, 45, 0.08);
+  --line-soft:       rgba(5, 13, 45, 0.05);
+
+  /* Typo */
+  --font-display: "Sora", system-ui, sans-serif;
+  --font-body:    "Inter", system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, monospace;
+  --font-hand:    "Caveat", cursive;
+
+  /* Tailles fluides */
+  --eyebrow-size: clamp(0.7rem, 0.9vw, 0.85rem);
+  --title-size:   clamp(1.85rem, 5vw, 4rem);
+  --h2-size:      clamp(1.4rem, 3.2vw, 2.4rem);
+  --h3-size:      clamp(1.05rem, 1.8vw, 1.4rem);
+  --body-size:    clamp(0.85rem, 1.1vw, 1rem);
+  --small-size:   clamp(0.7rem, 0.85vw, 0.85rem);
+  --mono-size:    clamp(0.7rem, 0.9vw, 0.85rem);
+
+  /* Spacing */
+  --slide-padding: clamp(1.5rem, 4vw, 4rem);
+  --content-gap:   clamp(0.75rem, 1.6vw, 1.5rem);
+  --element-gap:   clamp(0.4rem, 0.9vw, 0.9rem);
+
+  /* Animation */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
+  --d-fast:        0.4s;
+  --d-normal:      0.7s;
+  --d-slow:        1.1s;
+
+  /* Forme card (radius asymétrique du DS — top-left plat) */
+  --card-radius: 0 2rem 2rem 2rem;
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  --card-ring:   inset 0 0 0 1px rgba(0,0,0,0.05);
+}
+
+/* =========================================================================
+   RESET
+   ========================================================================= */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--body-size);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+html {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
+/* =========================================================================
+   VIEWPORT FITTING — chaque slide remplit exactement 100vh, jamais de scroll interne
+   ========================================================================= */
+.slide {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: var(--slide-padding);
+}
+.slide-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-height: 100%;
+  overflow: hidden;
+  gap: var(--content-gap);
+}
+
+img, svg.illu {
+  max-width: 100%;
+  object-fit: contain;
+}
+
+/* =========================================================================
+   TYPO
+   ========================================================================= */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--secondary);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+h1 { font-size: var(--title-size); }
+h2 { font-size: var(--h2-size); }
+h3 { font-size: var(--h3-size); font-weight: 500; }
+
+p { font-size: var(--body-size); color: var(--text); }
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--eyebrow-size);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--brand);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: clamp(20px, 2vw, 32px);
+  height: 1px;
+  background: var(--brand);
+}
+.eyebrow.no-line::before { display: none; }
+.eyebrow.green { color: var(--impact-green-dk); }
+.eyebrow.green::before { background: var(--impact-green-dk); }
+
+.mono { font-family: var(--font-mono); font-size: var(--mono-size); }
+
+.accent-red { color: var(--brand); }
+.yellow-mark {
+  position: relative; display: inline-block; z-index: 1;
+}
+.yellow-mark::after {
+  content: ""; position: absolute; left: -2%; right: -2%; bottom: 6%;
+  height: 0.32em; background: var(--accent-yellow); opacity: 0.6; z-index: -1;
+}
+
+/* =========================================================================
+   CHROME — brand-mark, slide-meta, progress, nav-dots, hint
+   ========================================================================= */
+.slide-meta {
+  position: absolute;
+  top: calc(var(--slide-padding) * 0.6);
+  right: var(--slide-padding);
+  font-family: var(--font-mono);
+  font-size: var(--small-size);
+  color: var(--text-soft);
+  letter-spacing: 0.05em;
+  z-index: 5;
+}
+.slide-meta strong { color: var(--brand); font-weight: 500; }
+
+.brand-mark {
+  position: absolute;
+  top: calc(var(--slide-padding) * 0.6);
+  left: var(--slide-padding);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--small-size);
+  color: var(--secondary);
+  letter-spacing: -0.01em;
+  z-index: 5;
+}
+.brand-mark .dot {
+  display: inline-block; width: 6px; height: 6px;
+  background: var(--brand); border-radius: 50%;
+  margin-left: 4px; vertical-align: middle;
+}
+.brand-mark .ctx { color: var(--text-soft); font-family: var(--font-mono); font-weight: 400; margin-left: 0.5rem; }
+/* sur fond sombre */
+.slide.dark .brand-mark, .slide.dark .slide-meta { color: rgba(255,255,255,0.85); }
+.slide.dark .brand-mark .ctx { color: rgba(255,255,255,0.5); }
+.slide.dark .slide-meta strong { color: var(--accent-yellow); }
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 3px;
+  background: var(--brand); width: 0%; z-index: 100;
+  transition: width 0.3s linear;
+}
+
+.nav-dots {
+  position: fixed; right: clamp(0.5rem, 1.5vw, 1rem); top: 50%;
+  transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 0.5rem; z-index: 90;
+}
+.nav-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: rgba(5, 13, 45, 0.15); border: none; cursor: pointer;
+  transition: all 0.3s ease; padding: 0;
+}
+.nav-dot.active { background: var(--brand); transform: scale(1.5); }
+.nav-dot:hover { background: var(--brand-hover); }
+
+.keyboard-hint {
+  position: fixed; bottom: 1rem; left: 1rem;
+  font-family: var(--font-mono); font-size: 0.7rem;
+  color: var(--text-soft); opacity: 0.6; z-index: 90; pointer-events: none;
+}
+
+/* =========================================================================
+   ANIMATIONS — reveal au scroll, déclenché par .visible
+   ========================================================================= */
+.reveal {
+  opacity: 0; transform: translateY(28px);
+  transition:
+    opacity var(--d-normal) var(--ease-out-expo),
+    transform var(--d-normal) var(--ease-out-expo);
+}
+.slide.visible .reveal { opacity: 1; transform: translateY(0); }
+
+.reveal-blur { opacity: 0; filter: blur(8px); transition: opacity var(--d-slow), filter var(--d-slow); }
+.slide.visible .reveal-blur { opacity: 1; filter: blur(0); }
+
+.reveal-scale { opacity: 0; transform: scale(0.92); transition: opacity var(--d-normal) var(--ease-out-expo), transform var(--d-normal) var(--ease-spring); }
+.slide.visible .reveal-scale { opacity: 1; transform: scale(1); }
+
+/* Fragments — build « à la PowerPoint » : éléments révélés un par un au clic / suivant.
+   Restent dans le flux (pas de reflow), apparaissent via .frag-visible (piloté en JS). */
+.fragment { opacity: 0; transform: translateY(26px); transition: opacity 0.55s var(--ease-out-expo), transform 0.55s var(--ease-out-expo); }
+.fragment.frag-visible { opacity: 1; transform: translateY(0); }
+/* Indice discret « cliquez pour révéler » tant qu'il reste des fragments cachés */
+.slide.has-pending-frags .frag-hint { opacity: 1; }
+.frag-hint {
+  position: absolute; bottom: calc(var(--slide-padding) * 0.7); left: 50%; transform: translateX(-50%);
+  font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-soft);
+  opacity: 0; transition: opacity 0.3s ease; pointer-events: none; display: flex; align-items: center; gap: 0.4rem; z-index: 5;
+}
+.frag-hint .dotpulse { width: 7px; height: 7px; border-radius: 50%; background: var(--brand); animation: mic-pulse 1.6s ease-in-out infinite; }
+
+/* Staggered delays */
+.slide.visible .reveal:nth-child(1)  { transition-delay: 0.05s; }
+.slide.visible .reveal:nth-child(2)  { transition-delay: 0.15s; }
+.slide.visible .reveal:nth-child(3)  { transition-delay: 0.25s; }
+.slide.visible .reveal:nth-child(4)  { transition-delay: 0.35s; }
+.slide.visible .reveal:nth-child(5)  { transition-delay: 0.45s; }
+.slide.visible .reveal:nth-child(6)  { transition-delay: 0.55s; }
+.slide.visible .reveal:nth-child(7)  { transition-delay: 0.65s; }
+.slide.visible .reveal:nth-child(8)  { transition-delay: 0.75s; }
+/* delays explicites pour les éléments hors flux nth-child */
+.d-1 { transition-delay: 0.15s !important; }
+.d-2 { transition-delay: 0.30s !important; }
+.d-3 { transition-delay: 0.45s !important; }
+.d-4 { transition-delay: 0.60s !important; }
+.d-5 { transition-delay: 0.75s !important; }
+.d-6 { transition-delay: 0.90s !important; }
+
+/* =========================================================================
+   DECOR — blobs flous
+   ========================================================================= */
+.deco-blob {
+  position: absolute; width: clamp(200px, 40vw, 600px); height: clamp(200px, 40vw, 600px);
+  border-radius: 50%; filter: blur(80px); pointer-events: none; opacity: 0.4; z-index: 0;
+}
+
+/* =========================================================================
+   CARDS génériques + badges
+   ========================================================================= */
+.card {
+  background: white; border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow), var(--card-ring);
+  padding: clamp(1rem, 1.6vw, 1.5rem);
+}
+.card-dark {
+  background: var(--secondary); color: white;
+  border-radius: var(--card-radius); padding: clamp(1rem, 1.6vw, 1.5rem);
+}
+.card-dark h3, .card-dark h2 { color: white; }
+.card-dark p { color: rgba(255,255,255,0.78); }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.3rem 0.7rem; border-radius: 999px;
+  font-family: var(--font-mono); font-size: var(--small-size);
+  background: var(--brand-fade); color: var(--brand);
+}
+.badge-impact   { background: var(--impact-fade); color: var(--impact-green-dk); }
+.badge-yellow   { background: rgba(253, 202, 72, 0.25); color: #8a6500; }
+.badge-secondary{ background: rgba(5,13,45,0.08); color: var(--secondary); }
+
+.bullet-list { list-style: none; display: flex; flex-direction: column; gap: clamp(0.5rem, 1.2vw, 1rem); }
+.bullet-list li { display: flex; gap: 0.8rem; align-items: flex-start; font-size: var(--body-size); line-height: 1.5; }
+.bullet-list li::before {
+  content: ""; flex-shrink: 0; width: 0.45em; height: 0.45em;
+  background: var(--brand); border-radius: 50%; margin-top: 0.6em;
+}
+
+/* Layout grids */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1rem, 3vw, 3rem); align-items: center; flex: 1; }
+.two-col-asym { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(1rem, 3vw, 3rem); align-items: center; flex: 1; }
+.two-col-asym.rev { grid-template-columns: 0.95fr 1.05fr; }
+
+/* =========================================================================
+   TITLE SLIDE
+   ========================================================================= */
+.title-slide .slide-content { justify-content: center; align-items: flex-start; gap: clamp(1rem, 2vw, 2rem); }
+.title-slide h1 {
+  font-size: clamp(2.6rem, 8vw, 6.5rem); font-weight: 700;
+  letter-spacing: -0.04em; line-height: 0.95; max-width: 92%;
+}
+.title-slide h1 .accent { color: var(--brand); font-style: italic; }
+.title-slide h1 .underline-marker { position: relative; display: inline-block; }
+.title-slide h1 .underline-marker::after {
+  content: ""; position: absolute; left: -2%; right: -2%; bottom: 8%;
+  height: 0.18em; background: var(--accent-yellow); z-index: -1; opacity: 0.7;
+}
+.title-slide .subtitle { font-size: clamp(1rem, 1.5vw, 1.3rem); color: var(--text); max-width: 56ch; font-weight: 400; }
+.title-slide .author {
+  display: flex; align-items: center; gap: 1rem; margin-top: clamp(0.5rem, 1.5vw, 1.5rem);
+  font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-soft);
+}
+.title-slide .author strong { color: var(--secondary); font-family: var(--font-display); }
+
+/* Hero curve SVG */
+.hero-curve {
+  position: absolute; right: 0; bottom: 0; width: clamp(300px, 50vw, 800px);
+  opacity: 0.9; z-index: 0; pointer-events: none;
+}
+
+/* =========================================================================
+   SECTION HEADER (chapitres)
+   ========================================================================= */
+.section-header { display: flex; flex-direction: column; gap: 0.8rem; }
+.section-num {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(3rem, 8vw, 6rem); color: var(--brand); line-height: 1; opacity: 0.95;
+}
+.section-num .sep { color: var(--secondary); opacity: 0.3; font-weight: 300; margin: 0 0.2em; }
+
+/* =========================================================================
+   TEAM — "Animé par" : 4 cartes, photo N&B circulaire (uniformise les fonds)
+   ========================================================================= */
+.team-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: clamp(0.75rem, 1.8vw, 1.6rem); flex: 1; align-content: center;
+}
+.team-card {
+  background: white; border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow), var(--card-ring);
+  padding: clamp(1rem, 1.6vw, 1.5rem) clamp(0.85rem, 1.4vw, 1.3rem);
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: clamp(0.4rem, 0.9vw, 0.8rem); position: relative; overflow: hidden;
+  transition: transform 0.4s var(--ease-out-expo), box-shadow 0.4s ease;
+}
+.team-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--brand); }
+.team-card:hover { transform: translateY(-5px); box-shadow: 0 14px 34px rgba(5,13,45,0.10), var(--card-ring); }
+.team-photo {
+  width: clamp(84px, 9vw, 130px); height: clamp(84px, 9vw, 130px);
+  border-radius: 50%; object-fit: cover; object-position: center;
+  background: var(--bg-soft);
+  box-shadow: 0 0 0 4px var(--bg), 0 0 0 5px var(--line);
+  transition: transform 0.45s var(--ease-spring);
+}
+.team-card:hover .team-photo { transform: scale(1.05); }
+.team-name { font-family: var(--font-display); font-weight: 600; font-size: clamp(0.95rem, 1.25vw, 1.18rem); color: var(--secondary); line-height: 1.1; }
+.team-role { font-size: clamp(0.74rem, 0.92vw, 0.9rem); color: var(--text-soft); line-height: 1.35; }
+.team-xp {
+  font-family: var(--font-mono); font-size: clamp(0.62rem, 0.78vw, 0.74rem);
+  letter-spacing: 0.05em; background: var(--brand-fade); color: var(--brand);
+  padding: 0.18rem 0.55rem; border-radius: 999px; margin-top: 0.1rem;
+}
+
+/* =========================================================================
+   PROGRAMME — 3 grands temps numérotés
+   ========================================================================= */
+.programme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.8rem, 1.8vw, 1.5rem); flex: 1; align-content: center; }
+.prog-card {
+  background: white; border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow), var(--card-ring);
+  padding: clamp(1.1rem, 1.8vw, 1.8rem); display: flex; flex-direction: column; gap: 0.6rem;
+  position: relative; overflow: hidden; transition: transform 0.4s var(--ease-out-expo);
+}
+.prog-card:hover { transform: translateY(-5px); }
+.prog-card .pnum {
+  font-family: var(--font-display); font-weight: 700; font-size: clamp(2.2rem, 4vw, 3.4rem);
+  line-height: 1; color: var(--brand); letter-spacing: -0.03em;
+}
+.prog-card.c2 .pnum { color: var(--accent-strong); }
+.prog-card.c3 .pnum { color: var(--impact-green); }
+.prog-card h3 { font-size: clamp(1.05rem, 1.5vw, 1.4rem); font-weight: 600; }
+.prog-card .pdur { font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-soft); }
+.prog-card .pdesc { font-size: clamp(0.78rem, 0.95vw, 0.95rem); color: var(--text); line-height: 1.5; }
+.prog-card::after { content: ""; position: absolute; right: -30px; bottom: -30px; width: 90px; height: 90px; border-radius: 50%; background: var(--brand-fade); opacity: 0.5; }
+.prog-card.c2::after { background: rgba(253,202,72,0.25); }
+.prog-card.c3::after { background: var(--impact-fade); }
+
+/* =========================================================================
+   TIMELINE — déroulé de la journée (2 colonnes : Matin / Après-midi)
+   ========================================================================= */
+.day-cols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1rem, 2.5vw, 2.5rem); flex: 1; align-content: center; }
+.day-col { display: flex; flex-direction: column; gap: clamp(0.4rem, 0.9vw, 0.7rem); }
+.day-col-head {
+  display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 0.2rem;
+  padding-bottom: 0.5rem; border-bottom: 2px solid var(--line);
+}
+.day-col-head .dtitle { font-family: var(--font-display); font-weight: 700; font-size: clamp(1rem, 1.5vw, 1.35rem); color: var(--secondary); }
+.day-col-head .dspan  { font-family: var(--font-mono); font-size: var(--small-size); color: var(--brand); }
+.day-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 0.7rem; padding: 0.18rem 0; }
+.day-row .ddot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand); flex-shrink: 0; }
+.day-row.theory .ddot { background: var(--secondary); }
+.day-row.break .ddot { background: var(--accent-strong); }
+.day-row .dlabel { font-size: clamp(0.78rem, 0.95vw, 0.95rem); color: var(--text); }
+.day-row .dlabel b { font-weight: 600; color: var(--secondary); font-family: var(--font-display); }
+.day-row .dtime { font-family: var(--font-mono); font-size: clamp(0.68rem, 0.82vw, 0.8rem); color: var(--text-soft); white-space: nowrap; }
+.day-break-band {
+  text-align: center; font-family: var(--font-mono); font-size: var(--small-size);
+  color: #8a6500; background: rgba(253,202,72,0.2); border-radius: 999px;
+  padding: 0.3rem 0.8rem; margin: 0.4rem auto; letter-spacing: 0.05em;
+}
+
+/* =========================================================================
+   INTERACTIVE 🎤 — slide "à vous de jouer"
+   ========================================================================= */
+.ask-slide .slide-content { justify-content: center; align-items: flex-start; gap: clamp(1rem, 2.5vw, 2rem); }
+.ask-badge {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  font-family: var(--font-mono); font-size: var(--small-size); letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--brand);
+  background: var(--brand-fade); padding: 0.45rem 0.9rem; border-radius: 999px;
+}
+.ask-badge .mic { font-size: 1.1em; animation: mic-pulse 2.2s ease-in-out infinite; }
+@keyframes mic-pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.18); opacity: 0.7; } }
+.ask-q {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(1.8rem, 5vw, 3.6rem); letter-spacing: -0.03em; line-height: 1.08;
+  color: var(--secondary); max-width: 20ch;
+}
+.ask-note { font-size: clamp(0.9rem, 1.2vw, 1.1rem); color: var(--text-soft); max-width: 50ch; }
+
+/* =========================================================================
+   IMAGE SHOWCASE (juicer / pomme) — visuel encadré
+   ========================================================================= */
+.showcase-img {
+  width: 100%; max-height: min(64vh, 520px); object-fit: contain;
+  border-radius: 1.2rem;
+}
+.showcase-frame {
+  background: white; border-radius: 1.4rem; padding: clamp(0.8rem, 1.6vw, 1.6rem);
+  box-shadow: 0 18px 48px rgba(5,13,45,0.12), var(--card-ring);
+  display: flex; align-items: center; justify-content: center;
+}
+/* --- Annotation « pour après » sur le canvas (cf. pptx) : masque doux la
+       zone fonctionnalités clés, en bas à droite du canevas. --- */
+.canvas-wrap { position: relative; display: inline-block; line-height: 0; }
+.canvas-later {
+  position: absolute; right: 0; bottom: 0; width: 44%; height: 37%;
+  border-radius: 0 0 1.2rem 0;
+  background: rgba(250,248,247,0.82); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+  border-left: 2px dashed var(--brand); border-top: 2px dashed var(--brand);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0.3rem; text-align: center; padding: 0.6rem; line-height: 1.1;
+}
+.canvas-later .cl-eye { font-size: clamp(1.1rem, 1.8vw, 1.6rem); }
+.canvas-later .cl-note { font-family: var(--font-hand); color: var(--brand); font-size: clamp(1.05rem, 1.7vw, 1.5rem); }
+.canvas-later .cl-sub { font-family: var(--font-mono); font-size: clamp(0.55rem, 0.7vw, 0.68rem); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-soft); }
+.caption-hand { font-family: var(--font-hand); font-size: clamp(1.3rem, 2.4vw, 2rem); color: var(--brand); line-height: 1.1; }
+.caption-sub { font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-soft); letter-spacing: 0.04em; }
+
+/* --- Templates écrans : 3 gabarits d'écrans vierges (cf. deck source) --- */
+.screen-templates {
+  flex: 1; width: 100%;
+  display: flex; align-items: stretch; justify-content: center;
+  gap: clamp(2rem, 6vw, 6rem);
+  padding: clamp(0.4rem, 1.4vh, 1.4rem) 0;
+}
+.screen-tpl {
+  flex: 1 1 0; max-width: clamp(160px, 21vw, 340px);
+  border: 2.5px solid var(--secondary); border-radius: 3px;
+  background: #fff;
+}
+
+/* =========================================================================
+   QUOTE STACK — 3 définitions du design
+   ========================================================================= */
+/* Quinconce : cascade diagonale haut-gauche → bas-droite (comme le pptx).
+   align-items:flex-start permet à chaque carte d'avoir sa propre position
+   horizontale via margin-left ; la largeur commune = 100% - max-décalage.      */
+.quote-stack { display: flex; flex-direction: column; gap: 0; justify-content: center; max-width: 62rem; width: 100%; margin: 0 auto; align-items: flex-start; }
+/* Slide « définitions » : composition centrée (titre + bulles) */
+.defs-center { align-items: center; text-align: center; }
+.quote-stack .quote-card {
+  box-shadow: 0 14px 36px rgba(5,13,45,0.22), 0 2px 8px rgba(5,13,45,0.06), var(--card-ring);
+  width: calc(100% - clamp(2.5rem, 6vw, 8rem));
+}
+/* Carte 1 — ancre gauche */
+.quote-stack .quote-card:nth-child(1) { z-index: 1; margin-left: 0; }
+/* Carte 2 — décalage diagonal ¹/₃ vers la droite + chevauchement vertical */
+.quote-stack .quote-card:nth-child(2) { z-index: 2; margin-top: calc(-1 * clamp(1.5rem, 2.8vw, 2.6rem)); margin-left: clamp(1.25rem, 3vw, 4rem); }
+/* Carte 3 — décalage diagonal ²/₃ (à droite sur le bord de la zone) */
+.quote-stack .quote-card:nth-child(3) { z-index: 3; margin-top: calc(-1 * clamp(1.5rem, 2.8vw, 2.6rem)); margin-left: clamp(2.5rem, 6vw, 8rem); }
+.quote-card {
+  background: white; border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow), var(--card-ring);
+  padding: clamp(0.9rem, 1.6vw, 1.5rem) clamp(1.1rem, 1.9vw, 1.8rem);
+  position: relative; border-left: 4px solid var(--line);
+  text-align: left;
+}
+.quote-card .qtext { font-family: var(--font-display); font-weight: 400; font-style: italic; font-size: clamp(0.9rem, 1.25vw, 1.18rem); color: var(--secondary); line-height: 1.4; }
+.quote-card .qauthor { font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-soft); margin-top: 0.5rem; letter-spacing: 0.04em; }
+.quote-card.highlight { background: var(--secondary); border-left-color: var(--accent-yellow); }
+.quote-card.highlight .qtext { color: white; font-weight: 500; font-style: normal; }
+.quote-card.highlight .qauthor { color: var(--accent-yellow); }
+.quote-card .qmark {
+  position: absolute; top: clamp(0.2rem,0.6vw,0.5rem); right: clamp(0.6rem,1.2vw,1.2rem);
+  font-family: var(--font-display); font-weight: 700; font-size: clamp(2.2rem, 4vw, 3.4rem);
+  color: var(--brand-fade); line-height: 1; pointer-events: none;
+}
+.quote-card.highlight .qmark { color: rgba(253,202,72,0.25); }
+
+/* =========================================================================
+   DESIGN THINKING — flux 5 étapes
+   ========================================================================= */
+.dt-flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: clamp(0.4rem, 0.9vw, 0.9rem); flex: 1; align-content: center; position: relative; }
+.dt-step {
+  background: white; border-radius: 1rem; box-shadow: var(--card-shadow), var(--card-ring);
+  padding: clamp(0.7rem, 1.2vw, 1.1rem); display: flex; flex-direction: column; gap: 0.4rem;
+  position: relative; border-top: 4px solid var(--brand);
+}
+.dt-step:nth-child(2) { border-top-color: #e8581f; }
+.dt-step:nth-child(3) { border-top-color: var(--accent-strong); }
+.dt-step:nth-child(4) { border-top-color: var(--impact-green); }
+.dt-step:nth-child(5) { border-top-color: var(--secondary); }
+.dt-step .dt-num {
+  font-family: var(--font-mono); font-size: 0.7rem; font-weight: 500;
+  width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: var(--brand-fade); color: var(--brand);
+}
+.dt-step:nth-child(2) .dt-num { background: #fbe6dc; color: #e8581f; }
+.dt-step:nth-child(3) .dt-num { background: rgba(253,202,72,0.25); color: #8a6500; }
+.dt-step:nth-child(4) .dt-num { background: var(--impact-fade); color: var(--impact-green-dk); }
+.dt-step:nth-child(5) .dt-num { background: rgba(5,13,45,0.08); color: var(--secondary); }
+.dt-step h4 { font-family: var(--font-display); font-weight: 600; font-size: clamp(0.85rem, 1.1vw, 1.05rem); color: var(--secondary); }
+.dt-step p { font-size: clamp(0.68rem, 0.85vw, 0.82rem); color: var(--text-soft); line-height: 1.4; }
+.dt-step .dt-arrow {
+  position: absolute; right: clamp(-0.7rem, -0.7vw, -0.4rem); top: 50%; transform: translateY(-50%);
+  font-family: var(--font-display); font-weight: 700; color: var(--brand); font-size: clamp(1rem, 1.4vw, 1.4rem); z-index: 2;
+}
+.dt-step:last-child .dt-arrow { display: none; }
+
+/* =========================================================================
+   BENEFITS — 3 colonnes numérotées
+   ========================================================================= */
+.benefit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.9rem, 2vw, 1.8rem); flex: 1; align-content: center; }
+.benefit-card {
+  background: white; border-radius: var(--card-radius); box-shadow: var(--card-shadow), var(--card-ring);
+  padding: clamp(1.1rem, 1.8vw, 1.8rem); display: flex; flex-direction: column; gap: 0.7rem; position: relative;
+}
+.benefit-card .bnum {
+  font-family: var(--font-display); font-weight: 700; font-size: clamp(2rem, 3.4vw, 3rem);
+  color: var(--accent-yellow); line-height: 1; letter-spacing: -0.03em;
+  -webkit-text-stroke: 1px var(--accent-strong);
+}
+.benefit-card p { font-size: clamp(0.85rem, 1.1vw, 1.05rem); color: var(--secondary); font-weight: 500; line-height: 1.45; }
+
+/* =========================================================================
+   REFERENCES CAROUSEL
+   ========================================================================= */
+.ref-stage { display: flex; flex-direction: column; gap: clamp(0.5rem, 1vw, 0.9rem); flex: 1; min-height: 0; }
+.ref-viewport {
+  position: relative; flex: 1; min-height: 0;
+  border-radius: 1rem; overflow: hidden;
+  background: var(--bg-soft); box-shadow: var(--card-shadow), var(--card-ring);
+  display: flex; align-items: center; justify-content: center;
+}
+.ref-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.5s var(--ease-out-expo); display: flex; align-items: center; justify-content: center; }
+.ref-slide.active { opacity: 1; }
+.ref-slide img { width: 100%; height: 100%; object-fit: contain; }
+.ref-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: clamp(36px, 3.5vw, 46px); height: clamp(36px, 3.5vw, 46px); border-radius: 50%;
+  background: white; border: 1px solid var(--line); color: var(--secondary);
+  display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 4;
+  font-size: 1.1rem; box-shadow: 0 4px 14px rgba(5,13,45,0.12); transition: all 0.25s ease;
+}
+.ref-arrow:hover { background: var(--brand); color: white; border-color: var(--brand); }
+.ref-arrow.prev { left: clamp(0.5rem, 1vw, 1rem); }
+.ref-arrow.next { right: clamp(0.5rem, 1vw, 1rem); }
+.ref-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.ref-caption { display: flex; align-items: baseline; gap: 0.7rem; }
+.ref-caption .rc-client { font-family: var(--font-display); font-weight: 600; font-size: clamp(0.95rem, 1.3vw, 1.2rem); color: var(--secondary); }
+.ref-caption .rc-dur { font-family: var(--font-mono); font-size: var(--small-size); color: var(--brand); background: var(--brand-fade); padding: 0.15rem 0.5rem; border-radius: 999px; }
+.ref-caption .rc-title { font-size: clamp(0.78rem, 0.95vw, 0.92rem); color: var(--text-soft); }
+.ref-dots { display: flex; gap: 0.4rem; }
+.ref-dots .rdot { width: 8px; height: 8px; border-radius: 50%; background: rgba(5,13,45,0.18); border: none; cursor: pointer; padding: 0; transition: all 0.25s ease; }
+.ref-dots .rdot.active { background: var(--brand); transform: scale(1.4); }
+.ref-counter { font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-soft); }
+
+/* =========================================================================
+   MOMENT SLIDES — respirations (Are you ready / Pause déj / Let's go / checkpoint)
+   ========================================================================= */
+.moment .slide-content { justify-content: center; align-items: center; text-align: center; gap: clamp(0.8rem, 2vw, 1.6rem); }
+.moment .moment-kicker { font-family: var(--font-mono); font-size: var(--mono-size); letter-spacing: 0.18em; text-transform: uppercase; }
+.moment h1 { font-size: clamp(3rem, 11vw, 8rem); font-weight: 700; letter-spacing: -0.04em; line-height: 0.95; }
+.moment .moment-sub { font-size: clamp(1rem, 1.6vw, 1.4rem); max-width: 40ch; }
+.slide.dark { background: var(--secondary); }
+.slide.dark h1, .slide.dark h2, .slide.dark h3 { color: white; }
+.slide.dark .moment-sub { color: rgba(255,255,255,0.78); }
+.slide.dark .moment-kicker { color: var(--accent-yellow); }
+.slide.brand-bg { background: var(--brand); }
+.slide.brand-bg h1 { color: white; }
+.slide.brand-bg .moment-kicker { color: rgba(255,255,255,0.85); }
+.slide.brand-bg .moment-sub { color: rgba(255,255,255,0.9); }
+
+/* =========================================================================
+   ACTIVITY SLIDES — ateliers du sprint (gauche = consignes, droite = motif atelier)
+   ========================================================================= */
+.act-head { display: flex; flex-direction: column; gap: 0.5rem; }
+.act-eyebrow {
+  display: inline-flex; align-items: center; gap: 0.5rem; align-self: flex-start;
+  font-family: var(--font-mono); font-size: var(--eyebrow-size); letter-spacing: 0.1em; text-transform: uppercase; color: var(--brand);
+}
+.act-eyebrow .step-pill {
+  width: 26px; height: 26px; border-radius: 50%; background: var(--brand); color: white;
+  display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: 0.8rem;
+}
+.act-title { font-size: clamp(1.5rem, 3.4vw, 2.6rem); }
+.duration-chip {
+  display: inline-flex; align-items: center; gap: 0.4rem; align-self: flex-start;
+  font-family: var(--font-mono); font-weight: 500; font-size: clamp(0.78rem, 1vw, 0.95rem);
+  background: var(--accent-yellow); color: #5c4500; padding: 0.4rem 0.85rem; border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(253,193,0,0.3); margin-top: 0.2rem;
+}
+.duration-chip::before { content: "⏱"; }
+.step-list { list-style: none; display: flex; flex-direction: column; gap: clamp(0.45rem, 1vw, 0.9rem); margin-top: 0.4rem; }
+.step-list li { display: flex; gap: 0.7rem; align-items: flex-start; font-size: clamp(0.85rem, 1.1vw, 1.02rem); line-height: 1.45; }
+.step-list li .si {
+  flex-shrink: 0; width: 1.5em; height: 1.5em; border-radius: 50%; background: var(--secondary); color: white;
+  font-family: var(--font-mono); font-size: 0.7em; display: flex; align-items: center; justify-content: center; margin-top: 0.15em;
+}
+.step-list li b { color: var(--secondary); font-weight: 600; }
+.sub-note {
+  font-family: var(--font-hand); font-size: clamp(1.15rem, 1.8vw, 1.6rem); color: var(--brand);
+  line-height: 1.15; margin-top: 0.4rem;
+}
+
+/* --- Slide 31 : boucle d'itération animée + légende --- */
+@keyframes iter-rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.iter-spin { transform-box: view-box; transform-origin: 100px 100px; animation: iter-rotate 7s linear infinite; }
+.iter-caption {
+  font-family: var(--font-hand); color: var(--brand); text-align: center;
+  font-size: clamp(1.2rem, 2vw, 1.75rem); line-height: 1.2;
+}
+.iter-caption b { color: var(--secondary); }
+
+/* --- Motif "pinboard" : feuille A4 punaisée au mur --- */
+.atelier { display: flex; align-items: center; justify-content: center; position: relative; }
+.a4-sheet {
+  background: white; border-radius: 4px; box-shadow: 0 18px 40px rgba(5,13,45,0.16);
+  width: clamp(180px, 22vw, 280px); aspect-ratio: 1 / 1.414; padding: clamp(1rem,1.8vw,1.6rem);
+  position: relative; transform: rotate(-3deg); border: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 0.7rem;
+}
+.a4-sheet.r2 { transform: rotate(2.5deg); }
+.a4-sheet::before {
+  content: ""; position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+  width: 14px; height: 14px; border-radius: 50%; background: var(--brand);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3); border: 2px solid #fff;
+}
+.a4-sheet .a4-line { height: 8px; border-radius: 3px; background: var(--bg-soft); }
+.a4-sheet .a4-line.t { background: var(--secondary); height: 12px; width: 70%; margin-top: 0.8rem; }
+.a4-sheet .a4-line.s { width: 90%; }
+.a4-sheet .a4-line.s2 { width: 60%; }
+.a4-sheet .a4-hand { font-family: var(--font-hand); color: var(--secondary); font-size: clamp(1.1rem,1.6vw,1.45rem); line-height: 1.05; }
+.a4-sheet .a4-hand .red { color: var(--brand); }
+
+/* --- Motif persona card --- */
+.persona-card {
+  background: white; border-radius: var(--card-radius); box-shadow: 0 14px 34px rgba(5,13,45,0.1), var(--card-ring);
+  width: clamp(210px, 26vw, 320px); padding: clamp(1rem,1.8vw,1.6rem); display: flex; flex-direction: column; gap: 0.7rem;
+}
+.persona-card .pc-top { display: flex; align-items: center; gap: 0.8rem; }
+.persona-card .pc-av { width: clamp(44px,5vw,60px); height: clamp(44px,5vw,60px); border-radius: 50%; background: linear-gradient(135deg, var(--brand), var(--accent-strong)); display: flex; align-items: center; justify-content: center; color: #fff; font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; }
+.persona-card .pc-name { font-family: var(--font-display); font-weight: 600; color: var(--secondary); font-size: clamp(0.95rem,1.2vw,1.1rem); }
+.persona-card .pc-tag { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-soft); }
+.persona-card .pc-field { display: flex; flex-direction: column; gap: 0.2rem; }
+.persona-card .pc-label { font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--brand); }
+.persona-card .pc-bar { height: 7px; border-radius: 3px; background: var(--bg-soft); }
+.persona-card .pc-bar.f { width: 80%; } .persona-card .pc-bar.g { width: 55%; }
+
+/* --- Choix sujets / personae : chips --- */
+.choice-block { display: flex; flex-direction: column; gap: clamp(0.6rem, 1.3vw, 1.1rem); }
+.choice-group { background: white; border-radius: var(--card-radius); box-shadow: var(--card-shadow), var(--card-ring); padding: clamp(0.9rem,1.5vw,1.4rem); }
+.choice-group .cg-label { font-family: var(--font-mono); font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-soft); margin-bottom: 0.6rem; display: block; }
+.choice-chips { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.choice-chip {
+  display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.55rem 1rem; border-radius: 999px;
+  background: var(--bg-soft); font-size: clamp(0.8rem,1vw,0.98rem); font-weight: 500; color: var(--secondary);
+  border: 1.5px solid transparent; transition: all 0.25s ease;
+}
+.choice-chip .ci { width: 1.6em; height: 1.6em; border-radius: 50%; background: var(--brand); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.9em; }
+.choice-chip.alt .ci { background: var(--impact-green); }
+.choice-chip.yel .ci { background: var(--accent-strong); }
+.choice-chip.sec .ci { background: var(--secondary); }
+
+/* =========================================================================
+   SLIDE 14 — PAIRES CAS → PERSONA
+   Chaque carte montre le lien sujet ↔ persona cible.
+   ========================================================================= */
+.case-pairs { display: flex; flex-direction: column; gap: clamp(0.6rem, 1.3vw, 1rem); }
+.case-pair { background: white; border-radius: var(--card-radius); box-shadow: var(--card-shadow), var(--card-ring); border-left: 4px solid var(--brand); overflow: hidden; }
+.case-pair.b { border-left-color: var(--impact-green); }
+.cp-top { padding: clamp(0.7rem, 1.2vw, 1.1rem) clamp(0.9rem, 1.5vw, 1.4rem); display: flex; align-items: flex-start; gap: 0.8rem; }
+.cp-letter { width: clamp(2rem, 2.5vw, 2.4rem); height: clamp(2rem, 2.5vw, 2.4rem); border-radius: 50%; background: var(--brand); color: white; font-family: var(--font-display); font-weight: 700; font-size: clamp(0.9rem, 1.1vw, 1.1rem); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 0.1rem; }
+.cp-letter.b { background: var(--impact-green); }
+.cp-sub-label { font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-soft); display: block; margin-bottom: 0.2rem; }
+.cp-sub-name { font-family: var(--font-display); font-weight: 600; color: var(--secondary); font-size: clamp(0.9rem, 1.2vw, 1.12rem); line-height: 1.25; }
+.cp-bottom { padding: clamp(0.45rem, 0.8vw, 0.65rem) clamp(0.9rem, 1.5vw, 1.4rem); background: var(--bg-soft); display: flex; align-items: center; gap: 0.7rem; }
+.cp-arrow-label { font-family: var(--font-mono); font-size: 0.63rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-soft); white-space: nowrap; }
+.cp-persona-chip { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--secondary); color: white; border-radius: 999px; padding: 0.32em 1em; font-family: var(--font-display); font-weight: 600; font-size: clamp(0.78rem, 0.95vw, 0.92rem); }
+.cp-persona-chip.yel { background: var(--accent-strong); color: var(--secondary); }
+/* Sujet unique (slide 14) : formats du séminaire + carte centrée */
+.cp-formats { display:block; margin-top:0.35rem; font-family: var(--font-mono); font-size: clamp(0.66rem,0.82vw,0.78rem); font-weight:400; letter-spacing:0.02em; color: var(--text-soft); text-transform:none; }
+.case-pairs.single { justify-content:center; }
+.case-pairs.single .case-pair { box-shadow: 0 14px 34px rgba(5,13,45,0.10), var(--card-ring); }
+.case-pairs.single .cp-top { padding: clamp(1rem,1.7vw,1.6rem) clamp(1.1rem,1.8vw,1.7rem); }
+.case-pairs.single .cp-sub-name { font-size: clamp(1.05rem,1.5vw,1.4rem); }
+
+/* =========================================================================
+   KEY FEATURE — équations Produit = fonctionnalité clé
+   ========================================================================= */
+.kf-list { display: flex; flex-direction: column; gap: clamp(0.5rem, 1.1vw, 0.9rem); }
+.kf-row {
+  display: flex; align-items: center; gap: clamp(0.6rem,1.4vw,1.2rem); background: white;
+  border-radius: 999px; box-shadow: var(--card-shadow), var(--card-ring);
+  padding: clamp(0.6rem,1vw,0.9rem) clamp(1rem,1.8vw,1.6rem);
+}
+.kf-row .kf-app { font-family: var(--font-display); font-weight: 700; font-size: clamp(0.95rem,1.3vw,1.25rem); color: var(--secondary); min-width: clamp(95px, 12vw, 150px); }
+.kf-row .kf-eq { color: var(--brand); font-family: var(--font-display); font-weight: 700; font-size: clamp(1rem,1.4vw,1.4rem); }
+.kf-row .kf-val { font-size: clamp(0.88rem,1.15vw,1.1rem); color: var(--text); }
+.kf-row.you { background: var(--secondary); }
+.kf-row.you .kf-app { color: #fff; }
+.kf-row.you .kf-eq { color: var(--accent-yellow); }
+.kf-row.you .kf-val { color: var(--accent-yellow); font-family: var(--font-hand); font-size: clamp(1.3rem,2vw,1.8rem); }
+/* Quiz « app = ?? » → la réponse recouvre le « ?? » (build PowerPoint). */
+.kf-quiz { position: relative; display: inline-flex; align-items: center; min-height: 1.5em; }
+.kf-quiz .kf-q { font-weight: 700; color: var(--brand); letter-spacing: 0.08em; transition: opacity 0.3s ease; }
+.kf-quiz .kf-a { position: absolute; left: 0; white-space: nowrap; color: var(--text); }
+.kf-quiz .kf-a.fragment { transform: translateY(12px); }
+.kf-quiz .kf-a.fragment.frag-visible { transform: translateY(0); }
+.kf-quiz:has(.kf-a.frag-visible) .kf-q { opacity: 0; }
+
+/* =========================================================================
+   USER JOURNEY — flux Lydia
+   ========================================================================= */
+.journey { display: flex; align-items: stretch; gap: clamp(0.3rem,0.7vw,0.6rem); flex-wrap: nowrap; }
+.j-step {
+  flex: 1; background: white; border-radius: 0.9rem; box-shadow: var(--card-shadow), var(--card-ring);
+  padding: clamp(0.6rem,1vw,1rem); display: flex; flex-direction: column; gap: 0.35rem; position: relative; min-width: 0;
+}
+.j-step .js-tag { font-family: var(--font-mono); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--brand); }
+.j-step .js-txt { font-size: clamp(0.72rem,0.92vw,0.92rem); color: var(--secondary); font-weight: 500; line-height: 1.25; }
+.j-step.start { border-top: 4px solid var(--brand); }
+.j-step.goal { background: var(--impact-fade); border: 1.5px solid var(--impact-green); }
+.j-step.goal .js-tag { color: var(--impact-green-dk); }
+.j-step.goal .js-txt { color: var(--impact-green-dk); }
+.j-arrow { display: flex; align-items: center; color: var(--brand); font-weight: 700; font-family: var(--font-display); font-size: clamp(0.9rem,1.4vw,1.4rem); flex-shrink: 0; }
+
+/* =========================================================================
+   SLIDE 20 — PARCOURS INTERACTIF (« commencer par la fin »)
+   La méthode (3 points) s'allume en synchro ; les étapes du parcours
+   s'éclairent dans l'ORDRE DE TRAITEMENT (badge ① objectif → ② départ →
+   ③④⑤ intermédiaires), pas de gauche à droite. Piloté par les fragments.
+   ========================================================================= */
+/* --- Méthode 3 points --- */
+.jm-method { display: flex; gap: clamp(0.5rem,1.1vw,0.9rem); }
+.jm-point { flex: 1; display: flex; gap: 0.55rem; align-items: flex-start; background: white; border-radius: 0.8rem; box-shadow: var(--card-shadow), var(--card-ring); padding: clamp(0.5rem,0.95vw,0.8rem) clamp(0.65rem,1.1vw,1rem); opacity: 0.5; transition: opacity 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease; }
+.jm-num { width: 1.6em; height: 1.6em; flex-shrink: 0; border-radius: 50%; background: var(--bg-soft); color: var(--text-soft); font-family: var(--font-display); font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 0.92em; transition: background 0.4s ease, color 0.4s ease; }
+.jm-txt { font-size: clamp(0.72rem,0.92vw,0.9rem); color: var(--secondary); line-height: 1.25; }
+.jm-txt b { color: var(--brand); }
+/* Activation pilotée par l'état du parcours (CSS :has) */
+.j21:has(.j-step.goal.frag-visible)     .jm-point.m-1,
+.j21:has(.j-step.start.frag-visible)    .jm-point.m-2,
+.j21:has(.j-step.montant.frag-visible)  .jm-point.m-3,
+.j21:has(.j-step.discover.frag-visible) .jm-point.m-4 {
+  opacity: 1; box-shadow: 0 10px 26px rgba(218,12,12,0.15), inset 0 0 0 1.5px var(--brand); transform: translateY(-2px);
+}
+.j21:has(.j-step.goal.frag-visible)     .jm-point.m-1 .jm-num,
+.j21:has(.j-step.start.frag-visible)    .jm-point.m-2 .jm-num,
+.j21:has(.j-step.montant.frag-visible)  .jm-point.m-3 .jm-num,
+.j21:has(.j-step.discover.frag-visible) .jm-point.m-4 .jm-num {
+  background: var(--brand); color: #fff;
+}
+
+/* --- Parcours séquentiel : boxes éteintes → allumées dans l'ordre de traitement --- */
+.journey.seq { position: relative; align-items: stretch; margin-top: clamp(0.8rem,1.6vw,1.4rem); gap: clamp(0.4rem,0.9vw,0.8rem); padding: 0 0.95rem; }
+/* Piste pointillée de fond reliant les étapes */
+.journey.seq::before { content:""; position:absolute; left:1.5%; right:1.5%; top:50%; height:2px; transform:translateY(-50%); background: repeating-linear-gradient(90deg, var(--line) 0 7px, transparent 7px 14px); z-index:0; }
+.journey.seq .j-step, .journey.seq .j-arrow { z-index:1; }
+/* Annule le masquage opacity/translate du système de fragments : ici on part
+   d'un placeholder « éteint » visible, qu'on allume au clic. */
+.journey.seq .j-step.fragment { opacity:1; transform:none; background: var(--bg-soft); box-shadow: inset 0 0 0 1.5px var(--line); transition: background 0.45s var(--ease-out-expo), box-shadow 0.45s var(--ease-out-expo); }
+.journey.seq .j-step.fragment .js-tag, .journey.seq .j-step.fragment .js-txt { opacity:0.32; transition: opacity 0.45s ease; }
+.journey.seq .j-step.start.fragment { border-top-color: transparent; }
+.journey.seq .j-step.goal.fragment { border-color: transparent; }
+/* État allumé */
+.journey.seq .j-step.fragment.frag-visible { background: white; box-shadow: 0 12px 28px rgba(5,13,45,0.12), var(--card-ring); }
+.journey.seq .j-step.fragment.frag-visible .js-tag, .journey.seq .j-step.fragment.frag-visible .js-txt { opacity:1; }
+.journey.seq .j-step.start.fragment.frag-visible { border-top: 4px solid var(--brand); }
+.journey.seq .j-step.goal.fragment.frag-visible { background: var(--impact-fade); box-shadow: 0 12px 28px rgba(32,175,134,0.18), inset 0 0 0 1.5px var(--impact-green); }
+/* Flèches (toujours visibles, dim → vives quand les deux boxes encadrantes sont allumées) */
+.journey.seq .j-arrow { color: var(--line); transition: color 0.4s ease; }
+.j21:has(.discover.frag-visible):has(.start.frag-visible)     .arr-disc-start,
+.j21:has(.start.frag-visible):has(.montant.frag-visible)      .arr-start-montant,
+.j21:has(.montant.frag-visible):has(.renseigne.frag-visible)  .arr-montant-rens,
+.j21:has(.renseigne.frag-visible):has(.paye.frag-visible)     .arr-rens-paye,
+.j21:has(.paye.frag-visible):has(.goal.frag-visible)          .arr-paye-goal { color: var(--brand); }
+/* --- Badge « ordre de remplissage » (corner, n° de traitement) --- */
+.j-num { position:absolute; top: clamp(-0.55rem,-0.9vw,-0.75rem); left: clamp(-0.55rem,-0.9vw,-0.75rem); width: clamp(1.45rem,2.3vw,1.95rem); height: clamp(1.45rem,2.3vw,1.95rem); border-radius:50%; background: var(--brand); color:#fff; font-family: var(--font-display); font-weight:700; font-size: clamp(0.78rem,1.05vw,0.98rem); display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(218,12,12,0.3); opacity:0; transform: scale(0.3); transition: opacity 0.4s ease, transform 0.45s var(--ease-spring); z-index:3; }
+.j-step.fragment.frag-visible .j-num { opacity:1; transform: scale(1); }
+.j-step.goal .j-num { background: var(--impact-green); box-shadow: 0 4px 10px rgba(10,110,82,0.32); }
+/* Légende ordre */
+.seq-legend { display:inline-flex; align-items:center; gap:0.45rem; font-family: var(--font-mono); font-size: clamp(0.62rem,0.78vw,0.74rem); color: var(--text-soft); letter-spacing:0.03em; }
+.seq-legend .lg-dot { width:1.25em; height:1.25em; border-radius:50%; background:var(--brand); color:#fff; display:inline-flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:0.85em; }
+
+/* =========================================================================
+   WIREFRAME — croquis papier (3 mini-écrans dessinés)
+   ========================================================================= */
+.wire-row { display: flex; gap: clamp(0.6rem,1.4vw,1.4rem); align-items: center; justify-content: center; }
+.wire-phone {
+  width: clamp(95px, 11vw, 150px); aspect-ratio: 9/17; background: #fffdf8;
+  border: 2.5px dashed var(--secondary); border-radius: 14px; padding: 0.6rem;
+  display: flex; flex-direction: column; gap: 0.4rem; position: relative;
+  box-shadow: 0 10px 26px rgba(5,13,45,0.08); transform: rotate(-2deg);
+}
+.wire-phone:nth-child(2) { transform: rotate(1.5deg); }
+.wire-phone:nth-child(3) { transform: rotate(-1deg); }
+.wire-phone .wf-bar { height: 9px; border-radius: 3px; background: var(--bg-soft); border: 1.5px dashed rgba(5,13,45,0.2); }
+.wire-phone .wf-bar.t { background: var(--brand-fade); border-color: var(--brand); height: 14px; }
+.wire-phone .wf-box { flex: 1; border-radius: 6px; border: 1.5px dashed rgba(5,13,45,0.25); display: flex; align-items: center; justify-content: center; }
+.wire-phone .wf-box span { font-family: var(--font-hand); color: var(--text-soft); font-size: 1.4rem; }
+.wire-phone .wf-cta { height: 18px; border-radius: 5px; background: var(--secondary); }
+
+/* =========================================================================
+   AI TOOLS — chips Claude Code / Stitch
+   ========================================================================= */
+.tool-chips { display: flex; gap: clamp(0.6rem,1.4vw,1.2rem); flex-wrap: wrap; }
+.tool-chip {
+  display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.6rem 1.1rem; border-radius: 999px;
+  background: white; box-shadow: var(--card-shadow), var(--card-ring); font-weight: 600; color: var(--secondary);
+  font-size: clamp(0.85rem,1.1vw,1.05rem);
+}
+.tool-chip .td { width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; color: #fff; font-family: var(--font-display); font-weight: 700; font-size: 0.85rem; }
+.tool-chip .td.claude { background: #d97757; }
+.tool-chip .td.stitch { background: var(--secondary); }
+.demo-callout {
+  display: inline-flex; align-items: center; gap: 0.6rem; margin-top: 0.4rem;
+  background: var(--secondary); color: #fff; border-radius: 999px; padding: 0.5rem 1rem;
+  font-family: var(--font-mono); font-size: var(--small-size); letter-spacing: 0.04em;
+}
+.demo-callout .yellow { color: var(--accent-yellow); font-weight: 600; }
+
+/* Pastille URL (slides tuto outils) */
+.url-pill { display: inline-flex; align-items: center; gap: 0.55rem; align-self: flex-start; background: var(--secondary); color: #fff; font-family: var(--font-mono); font-size: clamp(0.74rem,0.98vw,0.95rem); padding: 0.55rem 1rem; border-radius: 999px; text-decoration: none; box-shadow: 0 6px 16px rgba(5,13,45,0.16); transition: transform 0.25s var(--ease-out-expo), box-shadow 0.25s ease; }
+.url-pill:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(5,13,45,0.24); }
+.url-pill .up-ico { color: var(--accent-yellow); }
+.url-note { font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-soft); letter-spacing: 0.02em; }
+
+/* =========================================================================
+   PROTO / TEST rules card
+   ========================================================================= */
+.rule-card { background: var(--bg-soft); border-radius: var(--card-radius); padding: clamp(1rem,1.6vw,1.5rem); }
+.rule-card .rc-head { font-family: var(--font-mono); font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--brand); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem; }
+.rule-card ul { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+.rule-card li { display: flex; gap: 0.5rem; font-size: clamp(0.78rem,0.98vw,0.95rem); line-height: 1.4; }
+.rule-card li::before { content: "✓"; color: var(--impact-green); font-weight: 700; flex-shrink: 0; }
+.rule-card li.no::before { content: "✕"; color: var(--brand); }
+
+/* === SLIDE 30 — Tests utilisateurs : protocole compact + règles centrées et mises en avant === */
+.test-protocol {
+  display: flex; justify-content: center; gap: clamp(1rem, 2.6vw, 2.8rem);
+  flex-wrap: wrap; width: 100%; max-width: 64rem; margin: 0 auto;
+}
+.test-protocol .tp-item {
+  display: flex; align-items: flex-start; gap: 0.55rem; text-align: left;
+  font-size: clamp(0.8rem, 1vw, 0.96rem); color: var(--text-soft);
+  max-width: 18rem; line-height: 1.4;
+}
+.test-protocol .tp-num {
+  flex-shrink: 0; width: 1.5rem; height: 1.5rem; border-radius: 50%;
+  background: var(--secondary); color: #fff; font-family: var(--font-mono);
+  font-size: 0.78rem; font-weight: 600; display: grid; place-items: center;
+}
+.test-protocol .tp-item b { color: var(--secondary); font-weight: 600; }
+
+.test-rules { width: 100%; max-width: 58rem; margin: 0 auto; }
+.tr-head {
+  font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--brand); font-weight: 600; font-size: clamp(0.9rem, 1.3vw, 1.15rem);
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  margin-bottom: clamp(0.7rem, 1.6vh, 1.3rem);
+}
+.tr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(0.7rem, 1.4vw, 1.15rem); }
+.tr-rule {
+  display: flex; align-items: center; gap: clamp(0.6rem, 1vw, 0.95rem); text-align: left;
+  background: white; border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow), var(--card-ring);
+  padding: clamp(0.85rem, 1.5vw, 1.3rem) clamp(1rem, 1.7vw, 1.5rem);
+  font-size: clamp(0.95rem, 1.25vw, 1.18rem); line-height: 1.35;
+}
+.tr-rule .tr-ico {
+  flex-shrink: 0; width: clamp(2rem, 2.6vw, 2.6rem); height: clamp(2rem, 2.6vw, 2.6rem);
+  border-radius: 50%; display: grid; place-items: center;
+  font-weight: 700; font-size: clamp(1.05rem, 1.5vw, 1.4rem);
+}
+.tr-rule.ok .tr-ico { background: var(--impact-fade); color: var(--impact-green-dk); }
+.tr-rule.no .tr-ico { background: #fdecec; color: var(--brand); }
+.tr-rule.no { box-shadow: inset 0 0 0 1.5px var(--brand); }
+.tr-rule b { color: var(--secondary); font-weight: 600; }
+
+/* =========================================================================
+   PITCH — défi + structure + grille d'évaluation
+   ========================================================================= */
+.pitch-timer {
+  font-family: var(--font-display); font-weight: 700; font-size: clamp(3rem, 8vw, 6rem);
+  color: var(--brand); line-height: 1; letter-spacing: -0.04em;
+}
+.pitch-timer .u { font-size: 0.4em; color: var(--text-soft); font-weight: 500; }
+.pitch-points { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(0.5rem,1.2vw,1rem); flex: 1; align-content: center; }
+.pitch-point { display: flex; gap: 0.7rem; align-items: flex-start; background: white; border-radius: 0.9rem; box-shadow: var(--card-shadow), var(--card-ring); padding: clamp(0.7rem,1.2vw,1rem) clamp(0.9rem,1.4vw,1.2rem); }
+.pitch-point .pp-n { flex-shrink: 0; width: 1.7em; height: 1.7em; border-radius: 50%; background: var(--brand-fade); color: var(--brand); font-family: var(--font-display); font-weight: 700; font-size: 0.85em; display: flex; align-items: center; justify-content: center; }
+.pitch-point span.txt { font-size: clamp(0.78rem,0.98vw,0.95rem); color: var(--secondary); line-height: 1.35; }
+.pitch-point.demo { background: var(--secondary); }
+.pitch-point.demo span.txt { color: #fff; }
+.pitch-point.demo .pp-n { background: var(--accent-yellow); color: var(--secondary); }
+
+.rubric { display: flex; flex-direction: column; gap: clamp(0.6rem,1.2vw,1rem); flex: 1; justify-content: center; }
+.rubric-row { background: white; border-radius: var(--card-radius); box-shadow: var(--card-shadow), var(--card-ring); padding: clamp(0.8rem,1.4vw,1.3rem) clamp(1rem,1.7vw,1.6rem); display: grid; grid-template-columns: minmax(150px, 0.9fr) 1fr; gap: clamp(0.8rem,1.6vw,1.6rem); align-items: center; }
+.rubric-row .rr-crit { font-family: var(--font-display); font-weight: 600; font-size: clamp(0.95rem,1.25vw,1.2rem); color: var(--secondary); }
+.rubric-row .rr-crit .rr-sub { display: block; font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-soft); font-weight: 400; margin-top: 0.2rem; letter-spacing: 0.03em; }
+.rubric-scale { display: flex; flex-direction: column; gap: 0.4rem; }
+.rubric-scale .rs-track { height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--brand-fade), var(--impact-fade)); position: relative; }
+.rubric-scale .rs-ends { display: flex; justify-content: space-between; font-size: clamp(0.66rem,0.82vw,0.78rem); color: var(--text-soft); line-height: 1.25; gap: 1rem; }
+.rubric-scale .rs-ends .e0 { color: var(--brand); }
+.rubric-scale .rs-ends .e5 { color: var(--impact-green-dk); text-align: right; }
+.rubric-foot { font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-soft); text-align: center; }
+
+/* =========================================================================
+   CONTACT / closing
+   ========================================================================= */
+.closing .slide-content { justify-content: center; align-items: flex-start; gap: clamp(0.8rem, 2vw, 1.8rem); }
+.closing h1 { font-size: clamp(3rem, 10vw, 7.5rem); font-weight: 700; letter-spacing: -0.04em; line-height: 0.92; color: var(--secondary); }
+.closing h1 .accent { color: var(--brand); font-style: italic; }
+.contact-row {
+  display: flex; flex-wrap: wrap; align-items: center; gap: clamp(0.5rem, 1.5vw, 1.5rem);
+  font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-soft); letter-spacing: 0.05em;
+}
+.contact-row .sep { color: var(--brand); }
+
+/* =========================================================================
+   INLINE EDIT MODE
+   ========================================================================= */
+.edit-hotzone { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 10000; cursor: pointer; }
+.edit-toggle {
+  position: fixed; top: 1rem; left: 1rem; z-index: 10001;
+  width: 42px; height: 42px; border-radius: 50%; border: none; cursor: pointer;
+  background: var(--secondary); color: #fff; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 18px rgba(5,13,45,0.25);
+  opacity: 0; pointer-events: none; transition: opacity 0.3s ease, transform 0.2s ease;
+}
+.edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+.edit-toggle.active { background: var(--impact-green); }
+.edit-toggle:hover { transform: scale(1.08); }
+.edit-banner {
+  position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%) translateY(calc(100% + 2rem));
+  z-index: 10001; background: var(--secondary); color: #fff; border-radius: 999px;
+  padding: 0.5rem 1.1rem; font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.04em;
+  box-shadow: 0 8px 24px rgba(5,13,45,0.3); transition: transform 0.4s var(--ease-spring); display: flex; align-items: center; gap: 0.6rem;
+}
+.edit-banner.active { transform: translateX(-50%) translateY(0); }
+.edit-banner .yellow { color: var(--accent-yellow); }
+body.edit-active [contenteditable] { outline: 1px dashed rgba(218,12,12,0.5); outline-offset: 3px; border-radius: 3px; transition: outline-color 0.2s ease; }
+body.edit-active [contenteditable]:hover { outline-color: var(--brand); background: rgba(253,202,72,0.08); }
+body.edit-active [contenteditable]:focus { outline: 2px solid var(--brand); background: rgba(253,202,72,0.12); }
+
+/* =========================================================================
+   RESPONSIVE — paliers de hauteur (laptops courts, projecteurs)
+   ========================================================================= */
+@media (max-height: 700px) {
+  :root { --slide-padding: clamp(1.2rem, 3.5vw, 2.6rem); --content-gap: clamp(0.6rem, 1.3vw, 1.1rem); }
+  .team-photo { width: clamp(70px, 8vw, 100px); height: clamp(70px, 8vw, 100px); }
+}
+@media (max-height: 600px) {
+  :root { --slide-padding: 1.1rem 1.6rem; }
+  .dt-step p { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .team-role { font-size: 0.74rem; }
+}
+@media (max-height: 500px) {
+  .slide-content { gap: 0.5rem; }
+  .day-row .dlabel { font-size: 0.74rem; }
+}
+/* Tablette / mobile : empile les grilles */
+@media (max-width: 820px) {
+  .two-col, .two-col-asym, .two-col-asym.rev { grid-template-columns: 1fr; }
+  .team-grid, .programme-grid, .benefit-grid, .pitch-points { grid-template-columns: 1fr 1fr; }
+  .dt-flow { grid-template-columns: 1fr 1fr; }
+  .dt-step .dt-arrow { display: none; }
+  .day-cols { grid-template-columns: 1fr; }
+  .journey { flex-wrap: wrap; }
+}
+
+/* =========================================================================
+   REDUCED MOTION
+   ========================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition-duration: 0.01ms !important; }
+  .reveal, .reveal-blur, .reveal-scale { opacity: 1 !important; transform: none !important; filter: none !important; }
+  html { scroll-behavior: auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- ====================== EDIT MODE UI ====================== -->
+<div class="edit-hotzone" aria-hidden="true"></div>
+<button class="edit-toggle" id="editToggle" title="Mode édition (E)" aria-label="Activer le mode édition">✏️</button>
+<div class="edit-banner" id="editBanner">
+  <span>✏️ Mode édition — cliquez un texte pour l'éditer · <span class="yellow">Ctrl+S</span> pour exporter</span>
+</div>
+
+<!-- ====================== CHROME FIXE ====================== -->
+<div class="progress-bar" id="progressBar"></div>
+<nav class="nav-dots" id="navDots" aria-label="Navigation slides"></nav>
+<div class="keyboard-hint">← → ou espace · E pour éditer</div>
+
+
+<!-- ====================================================================
+     SLIDE 1 — TITRE
+     ==================================================================== -->
+<section class="slide title-slide" data-title="The Design Day">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span><span class="ctx">Master Marketing Pharma · 2026</span></span>
+  <span class="slide-meta"><strong>01</strong> / 36</span>
+
+  <div class="slide-content">
+    <div class="eyebrow reveal">Atelier pratique · une journée</div>
+    <h1 class="reveal">
+      The <span class="underline-marker">Design</span><br/>
+      <span class="accent">Day.</span>
+    </h1>
+    <p class="subtitle reveal">
+      Comprendre ce qu'est vraiment le design, puis le mettre en pratique :
+      un mini design sprint pour concevoir et prototyper un produit digital
+      pharma de bout en bout.
+    </p>
+    <div class="author reveal">
+      <span>—</span>
+      <span><strong>Digilityx</strong> · 9h00 → 15h30</span>
+    </div>
+  </div>
+
+  <!-- Courbe décorative signature -->
+  <svg class="hero-curve" viewBox="0 0 800 500" preserveAspectRatio="xMaxYMax meet" aria-hidden="true">
+    <defs>
+      <linearGradient id="curveGrad1" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#da0c0c" stop-opacity="0.18"/>
+        <stop offset="100%" stop-color="#fdca48" stop-opacity="0.25"/>
+      </linearGradient>
+      <linearGradient id="curveGrad2" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#050d2d" stop-opacity="0.06"/>
+        <stop offset="100%" stop-color="#050d2d" stop-opacity="0.15"/>
+      </linearGradient>
+    </defs>
+    <path d="M 800 0 Q 400 100 350 300 T 0 500 L 800 500 Z" fill="url(#curveGrad1)"/>
+    <path d="M 800 100 Q 500 200 450 350 T 100 500 L 800 500 Z" fill="url(#curveGrad2)"/>
+    <circle cx="680" cy="120" r="6" fill="#da0c0c"/>
+    <circle cx="600" cy="80" r="3" fill="#050d2d"/>
+  </svg>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 2 — ÉQUIPE (Animé par)
+     ==================================================================== -->
+<section class="slide" data-title="L'équipe">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>02</strong> / 36</span>
+
+  <div class="slide-content">
+    <div class="reveal">
+      <div class="eyebrow">Animé par</div>
+      <h2 style="margin-top: 0.5rem;">L'équipe Design de Digilityx</h2>
+    </div>
+
+    <div class="team-grid reveal">
+      <div class="team-card">
+        <img class="team-photo" src="design-day-assets/team-laurent.jpg" alt="Laurent Corazza" />
+        <div class="team-name">Laurent Corazza</div>
+        <div class="team-role">Associé fondateur<br/>Head of Digilityx Health</div>
+        <span class="team-xp">+25 ans d'XP</span>
+      </div>
+      <div class="team-card">
+        <img class="team-photo" src="design-day-assets/team-clement.jpg" alt="Clément Schoofs" />
+        <div class="team-name">Clément Schoofs</div>
+        <div class="team-role">Senior UX Researcher</div>
+        <span class="team-xp">10 ans d'XP</span>
+      </div>
+      <div class="team-card">
+        <img class="team-photo" src="design-day-assets/team-thibault.jpg" alt="Thibault Dequeker" />
+        <div class="team-name">Thibault Dequeker</div>
+        <div class="team-role">Senior UX Designer</div>
+        <span class="team-xp">12 ans d'XP</span>
+      </div>
+      <div class="team-card">
+        <img class="team-photo" src="design-day-assets/team-alexandre.jpg" alt="Alexandre Koch" />
+        <div class="team-name">Alexandre Koch</div>
+        <div class="team-role">Directeur du Design</div>
+        <span class="team-xp">13 ans d'XP</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 3 — PROGRAMME (3 temps)
+     ==================================================================== -->
+<section class="slide" data-title="Programme">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>03</strong> / 36</span>
+  <div class="deco-blob" style="background: var(--brand); right: -10%; top: -12%; opacity: 0.14;"></div>
+
+  <div class="slide-content">
+    <div class="reveal">
+      <div class="eyebrow">Le programme</div>
+      <h2 style="margin-top: 0.5rem;">Trois temps, une journée</h2>
+    </div>
+
+    <div class="programme-grid reveal">
+      <div class="prog-card c1">
+        <div class="pnum">01</div>
+        <h3>C'est quoi le design ?</h3>
+        <span class="pdur">≈ 15 min · théorie</span>
+        <p class="pdesc">Une définition, des références et la méthode du design thinking.</p>
+      </div>
+      <div class="prog-card c2">
+        <div class="pnum">02</div>
+        <h3>Mini design sprint</h3>
+        <span class="pdur">≈ 4 h · pratique</span>
+        <p class="pdesc">Du besoin au prototype testé : la méthode appliquée en équipe.</p>
+      </div>
+      <div class="prog-card c3">
+        <div class="pnum">03</div>
+        <h3>Session de pitch</h3>
+        <span class="pdur">≈ 20 min · restitution</span>
+        <p class="pdesc">1'30 par groupe pour défendre votre produit devant le jury.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 4 — DÉROULÉ DE LA JOURNÉE (timeline)
+     ==================================================================== -->
+<section class="slide" data-title="Déroulé">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>04</strong> / 36</span>
+
+  <div class="slide-content">
+    <div class="reveal">
+      <div class="eyebrow">9h00 → 15h30</div>
+      <h2 style="margin-top: 0.5rem;">Le déroulé de la journée</h2>
+    </div>
+
+    <div class="day-cols reveal">
+      <!-- MATIN -->
+      <div class="day-col">
+        <div class="day-col-head"><span class="dtitle">Matin</span><span class="dspan">≈ 2h30</span></div>
+        <div class="day-row theory"><span class="ddot"></span><span class="dlabel"><b>Théorie</b> — c'est quoi le design ?</span><span class="dtime">15 min</span></div>
+        <div class="day-row"><span class="ddot"></span><span class="dlabel">Sprint — choix du sujet</span><span class="dtime">15 min</span></div>
+        <div class="day-row"><span class="ddot"></span><span class="dlabel">Sprint — persona</span><span class="dtime">20 min</span></div>
+        <div class="day-row"><span class="ddot"></span><span class="dlabel">Sprint — fonctionnalité clé</span><span class="dtime">15 min</span></div>
+        <div class="day-row"><span class="ddot"></span><span class="dlabel">Sprint — parcours utilisateur</span><span class="dtime">30 min</span></div>
+        <div class="day-row"><span class="ddot"></span><span class="dlabel">Sprint — croquis papier</span><span class="dtime">20 min</span></div>
+        <div class="day-row"><span class="ddot"></span><span class="dlabel">Démo — les bases de l'IA</span><span class="dtime">15 min</span></div>
+        <div class="day-row"><span class="ddot"></span><span class="dlabel">Sprint — prototypage</span><span class="dtime">40 min</span></div>
+      </div>
+      <!-- APRÈS-MIDI -->
+      <div class="day-col">
+        <div class="day-break-band">🍴 Pause déjeuner</div>
+        <div class="day-col-head"><span class="dtitle">Après-midi</span><span class="dspan">≈ 2h</span></div>
+        <div class="day-row"><span class="ddot"></span><span class="dlabel">Sprint — tests utilisateurs</span><span class="dtime">40 min</span></div>
+        <div class="day-row"><span class="ddot"></span><span class="dlabel">Sprint — amélioration / itération</span><span class="dtime">15 min</span></div>
+        <div class="day-row"><span class="ddot"></span><span class="dlabel">Sprint — préparation du pitch</span><span class="dtime">30 min</span></div>
+        <div class="day-row break"><span class="ddot"></span><span class="dlabel"><b>Session de pitch</b> + délibération</span><span class="dtime">20 min</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 5 — SECTION 01
+     ==================================================================== -->
+<section class="slide" data-title="Chapitre 01">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>05</strong> / 36</span>
+  <div class="deco-blob" style="background: var(--brand); left: -12%; bottom: -10%; opacity: 0.16;"></div>
+
+  <div class="slide-content section-header">
+    <div class="section-num reveal">01<span class="sep">/</span><span style="color: var(--secondary); opacity: 0.3;">03</span></div>
+    <div class="eyebrow reveal">Théorie · ≈ 15 min</div>
+    <h2 class="reveal" style="font-size: clamp(2rem, 5.5vw, 4.2rem); max-width: 18ch;">
+      C'est quoi le design ?
+    </h2>
+    <p class="reveal" style="max-width: 56ch; color: var(--text-soft); font-size: clamp(1rem, 1.4vw, 1.2rem);">
+      Avant de concevoir, posons les bases : ce que le design est — et ce qu'il n'est pas.
+    </p>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 6 — INTERACTIF : c'est quoi le design pour vous ?
+     ==================================================================== -->
+<section class="slide ask-slide" data-title="À vous">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>06</strong> / 36</span>
+  <div class="deco-blob" style="background: var(--accent-yellow); right: -10%; top: -8%; opacity: 0.3;"></div>
+
+  <div class="slide-content">
+    <span class="ask-badge reveal"><span class="mic">🎤</span> À vous de jouer</span>
+    <h2 class="ask-q reveal">Pour vous, c'est quoi le design ?</h2>
+    <p class="ask-note reveal">Pas de mauvaise réponse — on note vos mots au tableau, on y reviendra.</p>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 7 — DÉFINITIONS (3 citations)
+     ==================================================================== -->
+<section class="slide" data-title="Définitions">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>07</strong> / 36</span>
+
+  <div class="slide-content defs-center">
+    <div class="reveal"><div class="eyebrow">Trois regards</div><h2 style="margin-top:0.4rem;">C'est quoi le design ?</h2></div>
+
+    <div class="quote-stack">
+      <div class="quote-card fragment">
+        <span class="qmark">“</span>
+        <p class="qtext">Les designers ne sont, en principe, ni des architectes, ni des carrossiers, ni des décorateurs, ni des ingénieurs, ni des graphistes. Ils sont apparentés à ces activités, mais constituent une profession distincte — à connaître d'art autant que de technique.</p>
+        <div class="qauthor">— Jacques Viénot, 1950</div>
+      </div>
+      <div class="quote-card fragment">
+        <span class="qmark">“</span>
+        <p class="qtext">Design is not just what it looks like and feels like. Design is how it works.</p>
+        <div class="qauthor">— Steve Jobs, on ne sait pas en quelle année</div>
+      </div>
+      <div class="quote-card highlight fragment">
+        <span class="qmark">“</span>
+        <p class="qtext">Explorer et concevoir des produits digitaux à forte valeur ajoutée pour le business <em>et</em> pour les utilisateurs.</p>
+        <div class="qauthor">— Digilityx, aujourd'hui</div>
+      </div>
+    </div>
+
+    <div class="frag-hint"><span class="dotpulse"></span> cliquez ou appuyez sur → pour révéler</div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 8 — JUICER (provocation forme / fonction)
+     ==================================================================== -->
+<section class="slide" data-title="Juicy Salif">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>08</strong> / 36</span>
+
+  <div class="slide-content two-col-asym">
+    <div class="reveal" style="display:flex; flex-direction:column; gap: clamp(0.8rem,1.6vw,1.4rem);">
+      <div class="eyebrow">Objet culte</div>
+      <h2>Un presse-agrumes… ou une icône&nbsp;?</h2>
+      <p style="max-width: 42ch; color: var(--text);">
+        Le <strong>Juicy Salif</strong> de Philippe Starck (Alessi, 1990) presse mal le citron —
+        et reste l'un des objets de design les plus célèbres au monde.
+      </p>
+      <p class="caption-hand">Le design, ce n'est pas que la fonction.<br/>C'est aussi le sens, l'émotion, le statut.</p>
+    </div>
+    <div class="reveal showcase-frame">
+      <img class="showcase-img" src="design-day-assets/starck-juicer.png" alt="Juicy Salif — Philippe Starck, Alessi" />
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 9 — INTERACTIF : la pomme (empathie / usage)
+     ==================================================================== -->
+<section class="slide ask-slide" data-title="La pomme">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>09</strong> / 36</span>
+
+  <div class="slide-content two-col-asym rev" style="max-width: 76rem; width: 100%; align-self: center; align-items: center; align-content: center;">
+    <div class="reveal showcase-frame">
+      <img class="showcase-img" src="design-day-assets/apples.jpg" alt="Pommes dans un panier" style="max-height: min(56vh, 440px);" />
+    </div>
+    <div class="reveal" style="display:flex; flex-direction:column; gap: clamp(0.8rem,1.8vw,1.4rem);">
+      <span class="ask-badge"><span class="mic">🎤</span> À vous de jouer</span>
+      <h2 class="ask-q" style="font-size: clamp(1.6rem,4vw,3rem);">Racontez-moi la dernière fois que vous avez mangé une pomme.</h2>
+      <p class="ask-note">Où ? Avec qui ? Pourquoi celle-là ? → Comprendre <strong>le contexte d'usage</strong>, c'est déjà faire du design.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 10 — DESIGN THINKING (5 étapes)
+     ==================================================================== -->
+<section class="slide" data-title="Design thinking">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>10</strong> / 36</span>
+
+  <div class="slide-content">
+    <div class="reveal">
+      <div class="eyebrow">La méthode</div>
+      <h2 style="margin-top:0.4rem; max-width: 24ch;">Concevoir des produits à forte valeur ajoutée&nbsp;: le design thinking</h2>
+    </div>
+
+    <div class="dt-flow reveal">
+      <div class="dt-step"><span class="dt-num">1</span><h4>Rechercher</h4><p>Études quanti &amp; quali — l'UX research pour comprendre le vrai besoin.</p><span class="dt-arrow">→</span></div>
+      <div class="dt-step"><span class="dt-num">2</span><h4>Idéation</h4><p>Ateliers de créativité, « How Might We » — générer des solutions.</p><span class="dt-arrow">→</span></div>
+      <div class="dt-step"><span class="dt-num">3</span><h4>Concevoir</h4><p>Confronter les hypothèses de solution aux apprentissages de la recherche.</p><span class="dt-arrow">→</span></div>
+      <div class="dt-step"><span class="dt-num">4</span><h4>Tester</h4><p>Valider les hypothèses auprès des utilisateurs avant d'investir.</p><span class="dt-arrow">→</span></div>
+      <div class="dt-step"><span class="dt-num">5</span><h4>Implémenter</h4><p>Suivre la vie du dispositif (site, app, process) pour l'améliorer en continu.</p><span class="dt-arrow">→</span></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 11 — BÉNÉFICES
+     ==================================================================== -->
+<section class="slide" data-title="Bénéfices">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>11</strong> / 36</span>
+  <div class="deco-blob" style="background: var(--impact-green); right: -12%; bottom: -12%; opacity: 0.16;"></div>
+
+  <div class="slide-content">
+    <div class="reveal"><div class="eyebrow green">Le retour sur investissement</div><h2 style="margin-top:0.4rem;">Et qu'est-ce qu'on y gagne ?</h2></div>
+
+    <div class="benefit-grid reveal">
+      <div class="benefit-card"><div class="bnum">01</div><p>Prendre des décisions <span class="yellow-mark">objectives</span>, fondées sur le réel.</p></div>
+      <div class="benefit-card"><div class="bnum">02</div><p>Réfléchir <strong>avant</strong> d'investir : se concentrer sur le bon problème.</p></div>
+      <div class="benefit-card"><div class="bnum">03</div><p>Concevoir des solutions <strong>utiles</strong>, au croisement des enjeux business et utilisateurs.</p></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 12 — RÉFÉRENCES (carousel)
+     ==================================================================== -->
+<section class="slide" data-title="Références">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>12</strong> / 36</span>
+
+  <div class="slide-content" style="gap: clamp(0.5rem,1vw,0.9rem);">
+    <div class="reveal" style="display:flex; align-items:baseline; justify-content:space-between; gap:1rem; flex-wrap:wrap;">
+      <div><div class="eyebrow">Notre terrain de jeu</div><h2 style="margin-top:0.3rem;">Quelques références Digilityx</h2></div>
+      <span class="ref-counter" id="refCounter">01 / 09</span>
+    </div>
+
+    <div class="ref-stage reveal" style="transition-delay:0.2s;">
+      <div class="ref-viewport" id="refViewport">
+        <button class="ref-arrow prev" id="refPrev" aria-label="Référence précédente">‹</button>
+        <button class="ref-arrow next" id="refNext" aria-label="Référence suivante">›</button>
+        <!-- Les .ref-slide sont injectés/contrôlés par JS ; l'image active a .active -->
+        <div class="ref-slide active" data-client="NHCO" data-dur="3 mois" data-title="Plateforme de contenus pour les clients professionnels"><img src="design-day-assets/ref-01-nhco.jpg" alt="NHCO — plateforme de contenus" /></div>
+        <div class="ref-slide" data-client="Biogaran" data-dur="6 semaines" data-title="Application mobile pour les infirmier·ère·s"><img src="design-day-assets/ref-02-biogaran-infirmiers.jpg" alt="Biogaran — app infirmiers" /></div>
+        <div class="ref-slide" data-client="Biogaran" data-dur="Nouvelle génération" data-title="L'application CRM des délégués"><img src="design-day-assets/ref-03-biogaran-crm.jpg" alt="Biogaran — CRM délégués" /></div>
+        <div class="ref-slide" data-client="Biogaran" data-dur="6 mois" data-title="Compagnon connecté pour les enfants patients chroniques"><img src="design-day-assets/ref-04-biogaran-diggy.jpg" alt="Biogaran — compagnon connecté Diggy" /></div>
+        <div class="ref-slide" data-client="Elfie" data-dur="1 mois" data-title="Conception et lancement de 3 nouveaux programmes de e-santé"><img src="design-day-assets/ref-05-elfie.jpg" alt="Elfie — programmes e-santé" /></div>
+        <div class="ref-slide" data-client="Alliance Healthcare" data-dur="2 mois" data-title="Refonte de l'interface e-commerce pour les pharmaciens"><img src="design-day-assets/ref-06-alliance.jpg" alt="Alliance Healthcare — e-commerce pharmaciens" /></div>
+        <div class="ref-slide" data-client="Novartis" data-dur="1 semaine" data-title="Landing page pour des séminaires d'oncologie (HCPs)"><img src="design-day-assets/ref-07-novartis.jpg" alt="Novartis — landing page séminaires" /></div>
+        <div class="ref-slide" data-client="Servier" data-dur="2 ans" data-title="Product design de 2 sites phares : Daflon & MyHealthPartner"><img src="design-day-assets/ref-08-servier.jpg" alt="Servier — Daflon & MyHealthPartner" /></div>
+        <div class="ref-slide" data-client="Netis.AI" data-dur="1 mois" data-title="Optimisation d'un outil SaaS pour les équipes market access"><img src="design-day-assets/ref-09-netis.jpg" alt="Netis.AI — outil SaaS laboratoires" /></div>
+      </div>
+
+      <div class="ref-bar">
+        <div class="ref-caption">
+          <span class="rc-client" id="refClient">NHCO</span>
+          <span class="rc-dur" id="refDur">3 mois</span>
+          <span class="rc-title" id="refTitle">Plateforme de contenus pour les clients professionnels</span>
+        </div>
+        <div class="ref-dots" id="refDots"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 13 — SECTION 02
+     ==================================================================== -->
+<section class="slide dark moment" data-title="Chapitre 02">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>13</strong> / 36</span>
+  <div class="deco-blob" style="background: var(--brand); right: -10%; top: -10%; opacity: 0.4;"></div>
+  <div class="deco-blob" style="background: var(--accent-yellow); left: -12%; bottom: -12%; opacity: 0.18;"></div>
+
+  <div class="slide-content section-header" style="align-items:flex-start; text-align:left;">
+    <div class="section-num reveal" style="color: var(--accent-yellow);">02<span class="sep" style="color:#fff; opacity:0.3;">/</span><span style="color:#fff; opacity:0.4;">03</span></div>
+    <div class="eyebrow reveal" style="color: var(--accent-yellow);">Pratique · ≈ 4 h</div>
+    <h2 class="reveal" style="color:#fff; font-size: clamp(2rem, 6vw, 4.6rem); max-width: 16ch;">Mini design sprint</h2>
+    <p class="reveal moment-sub" style="text-align:left;">4 heures pour passer du besoin au prototype testé — en équipe.</p>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 14 — OBJECTIF & CADRE
+     ==================================================================== -->
+<section class="slide" data-title="Objectif & cadre">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>14</strong> / 36</span>
+
+  <div class="slide-content two-col-asym">
+    <div class="reveal" style="display:flex; flex-direction:column; gap: clamp(0.7rem,1.4vw,1.2rem);">
+      <div class="eyebrow">L'objectif</div>
+      <h2>Concevoir &amp; prototyper un site mobile en 4&nbsp;heures</h2>
+      <p style="max-width: 40ch;">Par groupe de <strong>5 étudiant·es</strong>. Du besoin réel jusqu'à un prototype que d'autres pourront tester.</p>
+    </div>
+
+    <!-- Un seul sujet : le séminaire HCPs -->
+    <div class="reveal case-pairs single">
+      <div class="case-pair b">
+        <div class="cp-top">
+          <span class="cp-letter b">📅</span>
+          <div>
+            <span class="cp-sub-label">Le sujet</span>
+            <span class="cp-sub-name">Séminaire pour les HCPs<span class="cp-formats">(séminaire · webinaire · congrès · symposium)</span></span>
+          </div>
+        </div>
+        <div class="cp-bottom">
+          <span class="cp-arrow-label">→ Persona cible</span>
+          <span class="cp-persona-chip yel">HCPs <span style="font-weight:400; font-size:0.88em; opacity:0.75;">(généralistes, spécialistes, pharmaciens…)</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 15 — MOMENT : Are you ready?
+     ==================================================================== -->
+<section class="slide brand-bg moment" data-title="Ready?">
+  <span class="brand-mark" style="color:#fff;">DIGILITYX<span class="dot" style="background:#fff;"></span></span>
+  <span class="slide-meta" style="color:rgba(255,255,255,0.8);"><strong style="color:#fff;">15</strong> / 36</span>
+  <div class="slide-content">
+    <div class="moment-kicker reveal">Le sprint commence</div>
+    <h1 class="reveal">Are you ready ?</h1>
+    <p class="moment-sub reveal">Constituez vos équipes — on attaque l'étape&nbsp;1.</p>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 16 — ÉTAPE 1 : Choix du sujet
+     ==================================================================== -->
+<section class="slide activity" data-title="Étape 1">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>16</strong> / 36</span>
+
+  <div class="slide-content two-col-asym">
+    <div>
+      <div class="act-head reveal">
+        <span class="act-eyebrow"><span class="step-pill">1</span> Design sprint · étape 1</span>
+        <h2 class="act-title">Choix du sujet</h2>
+        <span class="duration-chip">15 min</span>
+      </div>
+      <ol class="step-list reveal">
+        <li><span class="si">0</span><span>Constituez <b>6 équipes de 5</b>.</span></li>
+        <li><span class="si">1</span><span>Choisissez l'<b>angle</b> de votre séminaire et votre <b>persona</b>.</span></li>
+        <li><span class="si">2</span><span>Écrivez-les sur une <b>feuille A4</b>.</span></li>
+        <li><span class="si">3</span><span>Accrochez-la sur le <b>mur le plus proche</b>.</span></li>
+      </ol>
+    </div>
+    <div class="atelier reveal" style="transition-delay:0.3s;">
+      <div class="a4-sheet">
+        <div class="a4-line t"></div>
+        <div class="a4-hand">Notre séminaire :<br/><span class="red">congrès en oncologie</span></div>
+        <div class="a4-hand" style="margin-top:auto;">Persona :<br/><span class="red">médecin oncologue</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 17 — ÉTAPE 2 : Persona & proposition de valeur
+     ==================================================================== -->
+<section class="slide activity" data-title="Étape 2">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>17</strong> / 36</span>
+
+  <div class="slide-content two-col-asym" style="grid-template-columns: 0.82fr 1.18fr;">
+    <div>
+      <div class="act-head reveal">
+        <span class="act-eyebrow"><span class="step-pill">2</span> Design sprint · étape 2</span>
+        <h2 class="act-title">Le persona &amp; sa proposition de valeur</h2>
+        <span class="duration-chip">20 min</span>
+      </div>
+      <ol class="step-list reveal">
+        <li><span class="si">1</span><span>En équipe, trouvez le <b>besoin majeur</b> de votre persona.</span></li>
+        <li><span class="si">2</span><span>Complétez le <b>canevas de proposition de valeur</b>.</span></li>
+      </ol>
+      <p class="sub-note reveal">À qui s'adresse-t-on, et quel problème résout-on vraiment ?</p>
+    </div>
+    <div class="atelier reveal" style="transition-delay:0.3s;">
+      <div class="showcase-frame">
+        <div class="canvas-wrap">
+          <img class="showcase-img" src="design-day-assets/value-prop-canvas.jpg" alt="Canevas de proposition de valeur : Pour [persona] qui veut [besoin], nous proposons [solution] qui permet de [bénéfices majeurs] en [fonctionnalités clés]" style="max-height: min(60vh, 460px);" />
+          <!-- Annotation reprise du pptx : on garde les fonctionnalités clés pour plus tard -->
+          <div class="canvas-later">
+            <span class="cl-eye">👀</span>
+            <span class="cl-note">On garde ça pour après&nbsp;!</span>
+            <span class="cl-sub">Fonctionnalités clés · étape suivante</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 18 — FONCTIONNALITÉ CLÉ (concept + exemples)
+     ==================================================================== -->
+<section class="slide" data-title="Fonctionnalité clé">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>18</strong> / 36</span>
+
+  <div class="slide-content two-col-asym">
+    <div class="reveal" style="display:flex; flex-direction:column; gap: clamp(0.7rem,1.4vw,1.2rem);">
+      <div class="eyebrow">Le cœur du produit</div>
+      <h2>La fonctionnalité clé</h2>
+      <p style="max-width: 40ch;">Celle pour laquelle l'utilisateur vient sur votre produit. <strong>Supprimez-la, et votre produit n'a plus de valeur.</strong></p>
+    </div>
+    <div class="reveal kf-list" style="transition-delay:0.25s;">
+      <!-- Exemple donné d'emblée -->
+      <div class="kf-row"><span class="kf-app">Google Maps</span><span class="kf-eq">=</span><span class="kf-val">trouver un lieu</span></div>
+      <!-- Quiz progressif : la ligne apparaît avec « ?? », puis la réponse recouvre le « ?? » -->
+      <div class="kf-row fragment"><span class="kf-app">WhatsApp</span><span class="kf-eq">=</span><span class="kf-val kf-quiz"><span class="kf-q">??</span><span class="kf-a fragment">envoyer un message</span></span></div>
+      <div class="kf-row fragment"><span class="kf-app">Airbnb</span><span class="kf-eq">=</span><span class="kf-val kf-quiz"><span class="kf-q">??</span><span class="kf-a fragment">réserver un logement</span></span></div>
+      <!-- Et vous ? -->
+      <div class="kf-row you fragment"><span class="kf-app">Votre produit</span><span class="kf-eq">=</span><span class="kf-val">… ?</span></div>
+    </div>
+  </div>
+
+  <div class="frag-hint"><span class="dotpulse"></span> cliquez ou appuyez sur → pour révéler</div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 19 — ÉTAPE 3 : Définir la fonctionnalité clé
+     ==================================================================== -->
+<section class="slide activity" data-title="Étape 3">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>19</strong> / 36</span>
+
+  <div class="slide-content two-col-asym">
+    <div>
+      <div class="act-head reveal">
+        <span class="act-eyebrow"><span class="step-pill">3</span> Design sprint · étape 3</span>
+        <h2 class="act-title">Définissez votre fonctionnalité clé</h2>
+        <span class="duration-chip">15 min</span>
+      </div>
+      <ol class="step-list reveal">
+        <li><span class="si">1</span><span>Repartez du <b>besoin majeur</b> de votre persona et de votre <b>proposition de valeur</b>.</span></li>
+        <li><span class="si">2</span><span>Choisissez <b>la fonctionnalité clé</b> de votre produit.</span></li>
+        <li><span class="si">3</span><span>Écrivez-la de manière <b>concise</b>, puis accrochez le tout au mur.</span></li>
+      </ol>
+    </div>
+    <div class="atelier reveal" style="transition-delay:0.3s;">
+      <div class="a4-sheet r2">
+        <div class="a4-line t"></div>
+        <div class="a4-hand">Fonctionnalité clé :</div>
+        <div class="a4-hand red" style="font-size:clamp(1.3rem,2vw,1.8rem);">« suivre mon traitement au quotidien »</div>
+        <div class="a4-line s" style="margin-top:auto;"></div>
+        <div class="a4-line s2"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 20 — ÉTAPE 4 : Construire le parcours (+ exemple Lydia)
+     ==================================================================== -->
+<section class="slide activity" data-title="Étape 4">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>20</strong> / 36</span>
+
+  <div class="slide-content j21">
+    <div class="reveal" style="display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;">
+      <div class="act-head">
+        <span class="act-eyebrow"><span class="step-pill">4</span> Design sprint · étape 4</span>
+        <h2 class="act-title">Construisez votre parcours utilisateur</h2>
+      </div>
+      <span class="duration-chip">30 min</span>
+    </div>
+
+    <!-- Méthode 4 points (s'allume en synchro avec le parcours) -->
+    <div class="jm-method reveal" style="transition-delay:0.12s;">
+      <div class="jm-point m-1"><span class="jm-num">1</span><span class="jm-txt">Définir l'<b>objectif final</b> (le besoin est résolu).</span></div>
+      <div class="jm-point m-2"><span class="jm-num">2</span><span class="jm-txt">Définir l'<b>étape n°1</b> (le point de départ).</span></div>
+      <div class="jm-point m-3"><span class="jm-num">3</span><span class="jm-txt">Poser les <b>étapes intermédiaires</b>.</span></div>
+      <div class="jm-point m-4"><span class="jm-num">4</span><span class="jm-txt"><b>Acquisition / activation</b> : la découverte du service.</span></div>
+    </div>
+
+    <div class="reveal" style="display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; transition-delay:0.18s;">
+      <p style="color:var(--text-soft); font-family:var(--font-mono); font-size:var(--small-size); letter-spacing:0.04em; margin:0;">Exemple — l'app Lydia (envoyer de l'argent à un ami)</p>
+      <span class="seq-legend"><span class="lg-dot">1</span> ordre de remplissage — on commence par la fin</span>
+    </div>
+
+    <!-- Parcours : DOM = ordre de TRAITEMENT (objectif → départ → intermédiaires) ;
+         flex order = ordre CHRONOLOGIQUE de gauche à droite. -->
+    <div class="journey seq reveal" style="transition-delay:0.24s;">
+      <!-- DOM = ordre de remplissage (badges = étape de méthode) ; style order = position chronologique.
+           Méthode : 1 objectif · 2 départ · 3 étapes intermédiaires · 4 acquisition (en dernier). -->
+      <!-- 1 · Objectif final — défini en premier -->
+      <div class="j-step goal fragment" style="order:11"><span class="j-num">1</span><span class="js-tag">Objectif final</span><span class="js-txt">Mon ami a récupéré son argent</span></div>
+      <!-- 2 · Étape n°1 — le point de départ : création de compte -->
+      <div class="j-step start fragment" style="order:3"><span class="j-num">2</span><span class="js-tag">Étape n°1 · départ</span><span class="js-txt">Je crée mon compte</span></div>
+      <!-- 3 · Étapes intermédiaires (montant → renseigne → paye) -->
+      <div class="j-step montant fragment" style="order:5"><span class="j-num">3</span><span class="js-tag">Intermédiaire</span><span class="js-txt">Je choisis le montant</span></div>
+      <div class="j-step renseigne fragment" style="order:7"><span class="j-num">3</span><span class="js-tag">Intermédiaire</span><span class="js-txt">Je renseigne le n° de téléphone</span></div>
+      <div class="j-step paye fragment" style="order:9"><span class="j-num">3</span><span class="js-tag">Intermédiaire</span><span class="js-txt">Je paye avec ma carte</span></div>
+      <!-- 4 · Acquisition / Activation — découverte du service (posée en DERNIER) -->
+      <div class="j-step discover fragment" style="order:1"><span class="j-num">4</span><span class="js-tag">Acquisition / Activation</span><span class="js-txt">Je vois une pub dans le métro pour Lydia, je télécharge l'app</span></div>
+      <!-- Flèches (positions chronologiques fixes via order) -->
+      <div class="j-arrow arr-disc-start" style="order:2">→</div>
+      <div class="j-arrow arr-start-montant" style="order:4">→</div>
+      <div class="j-arrow arr-montant-rens" style="order:6">→</div>
+      <div class="j-arrow arr-rens-paye" style="order:8">→</div>
+      <div class="j-arrow arr-paye-goal" style="order:10">→</div>
+    </div>
+
+    <p class="sub-note reveal" style="text-align:center; transition-delay:0.4s;">Commencez par l'<b>objectif final</b>, définissez la <b>1<sup>re</sup> étape</b> du chemin, puis posez les <b>étapes intermédiaires</b> nécessaires.</p>
+
+    <div class="frag-hint"><span class="dotpulse"></span> cliquez ou appuyez sur → pour remplir le parcours</div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 21 — TITRE : Prototypage
+     ==================================================================== -->
+<section class="slide dark moment" data-title="Prototypage">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>21</strong> / 36</span>
+  <div class="deco-blob" style="background: var(--brand); right: -10%; top: -12%; opacity: 0.4;"></div>
+  <div class="deco-blob" style="background: var(--accent-yellow); left: -12%; bottom: -12%; opacity: 0.18;"></div>
+
+  <div class="slide-content">
+    <div class="moment-kicker reveal">Mini design sprint · on passe à la pratique</div>
+    <h1 class="reveal">Prototypage</h1>
+    <p class="moment-sub reveal">Du croquis papier au prototype interactif — montrer la valeur, pas fabriquer le produit.</p>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 22 — ÉTAPE 5 : Croquis papier
+     ==================================================================== -->
+<section class="slide activity" data-title="Étape 5">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>22</strong> / 36</span>
+
+  <div class="slide-content">
+    <div class="reveal" style="display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;">
+      <div class="act-head">
+        <span class="act-eyebrow"><span class="step-pill">5</span> Design sprint · étape 5</span>
+        <h2 class="act-title">Les 1ers croquis de vos écrans</h2>
+      </div>
+      <span class="duration-chip">20 min</span>
+    </div>
+
+    <div class="two-col reveal" style="transition-delay:0.2s;">
+      <ol class="step-list">
+        <li><span class="si">1</span><span>Toujours commencer par des <b>croquis</b> — crayon, stylo, et le template papier.</span></li>
+        <li><span class="si">2</span><span>Dessinez <b>uniquement</b> les écrans qui incarnent toute la valeur de votre <b>fonctionnalité clé</b>.</span></li>
+      </ol>
+      <div class="wire-row">
+        <div class="wire-phone"><div class="wf-bar t"></div><div class="wf-box"><span>accueil</span></div><div class="wf-cta"></div></div>
+        <div class="wire-phone"><div class="wf-bar t"></div><div class="wf-bar"></div><div class="wf-box"><span>★</span></div><div class="wf-cta"></div></div>
+        <div class="wire-phone"><div class="wf-bar t"></div><div class="wf-box"><span>✓</span></div><div class="wf-bar"></div></div>
+      </div>
+    </div>
+    <p class="sub-note reveal" style="text-align:center; transition-delay:0.4s;">Personne n'est Michel-Ange ici — donc pas d'excuse « je ne sais pas dessiner » !</p>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 23 — TEMPLATES ÉCRANS : gabarits papier à imprimer (pptx 42-43)
+     ==================================================================== -->
+<section class="slide" data-title="Templates écrans">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>23</strong> / 36</span>
+
+  <div class="slide-content" style="justify-content:flex-start; gap: clamp(1rem, 2.5vh, 2rem);">
+    <h2 class="reveal">Templates écrans</h2>
+    <div class="screen-templates reveal" style="transition-delay:0.12s;">
+      <div class="screen-tpl"></div>
+      <div class="screen-tpl"></div>
+      <div class="screen-tpl"></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 24 — EXEMPLE DE CROQUIS : flux Autopilot (pptx 44)
+     ==================================================================== -->
+<section class="slide activity" data-title="Exemple de croquis">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>24</strong> / 36</span>
+
+  <div class="slide-content two-col-asym" style="grid-template-columns: 0.78fr 1.22fr;">
+    <div>
+      <div class="act-head reveal">
+        <span class="act-eyebrow"><span class="step-pill">5</span> Design sprint · étape 5</span>
+        <h2 class="act-title">Un exemple de croquis</h2>
+      </div>
+      <p class="reveal" style="color:var(--text-soft); margin-top:0.7rem; max-width:32ch;">Quelques écrans suffisent pour raconter tout le parcours : ici <b>3 écrans</b> et des flèches qui montrent les <b>interactions clés</b>. Simple, lisible, fait main.</p>
+    </div>
+    <div class="atelier reveal" style="transition-delay:0.25s;">
+      <div class="showcase-frame">
+        <img class="showcase-img" src="design-day-assets/croquis-example.png" alt="Exemple de croquis : trois écrans dessinés à la main (History, Buy Again, Checkout) reliés par des flèches d'interaction illustrant un parcours d'achat automatique" style="max-height: min(66vh, 520px);" />
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 25 — DE LA LO-FI À LA HI-FI AVEC L'IA
+     ==================================================================== -->
+<section class="slide" data-title="Lo-fi → Hi-fi">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>25</strong> / 36</span>
+
+  <div class="slide-content two-col-asym">
+    <div class="reveal" style="display:flex; flex-direction:column; gap: clamp(0.7rem,1.4vw,1.2rem);">
+      <div class="eyebrow">De la Lo-fi vers la Hi-fi</div>
+      <h2>Prototypez avec l'IA</h2>
+      <p style="max-width: 40ch;">L'IA est votre meilleur allié pour passer du croquis à un prototype réel. <strong>Encore faut-il savoir quoi lui demander.</strong></p>
+    </div>
+    <div class="reveal" style="display:flex; flex-direction:column; gap: clamp(0.7rem,1.4vw,1.1rem); align-items:flex-start;">
+      <div class="tool-chips">
+        <span class="tool-chip"><span class="td claude">C</span> Claude Code</span>
+        <span class="tool-chip"><span class="td stitch">S</span> Stitch</span>
+      </div>
+      <div class="demo-callout">▶ Démo live — <span class="yellow">les bases, 15 min</span></div>
+      <p style="color:var(--text-soft); font-size:0.92em; max-width:38ch;">On vous montre comment décrire votre écran, votre parcours et votre intention pour que l'IA génère une interface utile.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 26 — TUTO : Installer Claude Code Desktop
+     ==================================================================== -->
+<section class="slide" data-title="Tuto · Claude Code">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>26</strong> / 36</span>
+
+  <div class="slide-content two-col-asym">
+    <div class="reveal" style="display:flex; flex-direction:column; gap: clamp(0.6rem,1.3vw,1.1rem); align-items:flex-start;">
+      <div class="eyebrow">Outil 1 · prototypage IA</div>
+      <h2>Installer Claude&nbsp;Code Desktop</h2>
+      <p style="max-width:36ch;">L'app de bureau embarque Claude Code dans une interface graphique — <strong>aucun terminal requis</strong>.</p>
+      <span class="tool-chip"><span class="td claude">C</span> Claude Code Desktop</span>
+      <a class="url-pill" href="https://code.claude.com/docs/fr/desktop-quickstart" target="_blank" rel="noopener"><span class="up-ico">🔗</span> code.claude.com/docs/fr/desktop-quickstart</a>
+      <p class="url-note">Abonnement Claude Pro / Max requis</p>
+    </div>
+    <div class="reveal" style="transition-delay:0.2s;">
+      <ol class="step-list">
+        <li><span class="si">1</span><span>Téléchargez l'app (<b>macOS</b> / <b>Windows</b>) et lancez l'installeur.</span></li>
+        <li><span class="si">2</span><span>Connectez-vous avec votre <b>compte Anthropic</b>.</span></li>
+        <li><span class="si">3</span><span>Ouvrez l'onglet <b>Code</b>.</span></li>
+        <li><span class="si">4</span><span><b>Local</b> → <b>Sélectionner le dossier</b> de votre projet.</span></li>
+        <li><span class="si">5</span><span>Choisissez un modèle, puis <b>décrivez</b> ce que Claude doit faire.</span></li>
+        <li><span class="si">6</span><span>Validez les changements : <b>diff</b> → Accepter / Rejeter.</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 27 — TUTO : Stitch (Google)
+     ==================================================================== -->
+<section class="slide" data-title="Tuto · Stitch">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>27</strong> / 36</span>
+
+  <div class="slide-content two-col-asym">
+    <div class="reveal" style="display:flex; flex-direction:column; gap: clamp(0.6rem,1.3vw,1.1rem); align-items:flex-start;">
+      <div class="eyebrow">Outil 2 · prototypage IA</div>
+      <h2>Stitch — <span style="font-style:italic; font-weight:400;">Design with AI</span></h2>
+      <p style="max-width:36ch;">L'outil de <strong>Google Labs</strong> qui génère des interfaces d'app à partir d'une simple description — ou d'un croquis.</p>
+      <span class="tool-chip"><span class="td stitch">S</span> Stitch · Google Labs</span>
+      <a class="url-pill" href="https://stitch.withgoogle.com/" target="_blank" rel="noopener"><span class="up-ico">🔗</span> stitch.withgoogle.com</a>
+      <p class="url-note">Gratuit · connexion avec un compte Google</p>
+    </div>
+    <div class="reveal" style="transition-delay:0.2s;">
+      <ol class="step-list">
+        <li><span class="si">1</span><span>Ouvrez <b>stitch.withgoogle.com</b> et connectez-vous (compte Google).</span></li>
+        <li><span class="si">2</span><span><b>Décrivez</b> votre écran en langage naturel — ou importez un <b>croquis</b>.</span></li>
+        <li><span class="si">3</span><span>Stitch génère l'interface ; <b>itérez</b> en affinant le prompt.</span></li>
+        <li><span class="si">4</span><span>Exportez vers le <b>code</b> ou <b>Figma</b>.</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 28 — MOMENT : Pause déj
+     ==================================================================== -->
+<section class="slide moment" data-title="Pause déj" style="background: var(--accent-yellow);">
+  <span class="brand-mark" style="color:var(--secondary);">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta" style="color:rgba(5,13,45,0.55);"><strong style="color:var(--brand);">28</strong> / 36</span>
+  <div class="slide-content">
+    <div class="moment-kicker reveal" style="color:#8a6500;">On a bien mérité ça</div>
+    <h1 class="reveal" style="color:var(--secondary);">Pause déj ! 🍴</h1>
+    <p class="moment-sub reveal" style="color:#5c4500;">On reprend l'après-midi avec le prototypage.</p>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 29 — ÉTAPE 6 : Prototypez votre interface
+     ==================================================================== -->
+<section class="slide activity" data-title="Étape 6">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>29</strong> / 36</span>
+
+  <div class="slide-content two-col-asym">
+    <div>
+      <div class="act-head reveal">
+        <span class="act-eyebrow"><span class="step-pill">6</span> Design sprint · étape 6</span>
+        <h2 class="act-title">Prototypez votre interface</h2>
+        <span class="duration-chip">1 h 00</span>
+      </div>
+      <p class="reveal" style="color:var(--text-soft); margin-top:0.5rem;">Maintenant que vous êtes d'accord sur les croquis qui représentent votre fonctionnalité clé :</p>
+      <ol class="step-list reveal">
+        <li><span class="si">1</span><span>Posez les <b>maquettes</b> de votre interface avec <b>Claude Code</b> ou <b>Stitch</b>.</span></li>
+        <li><span class="si">2</span><span>Créez des <b>interactions</b> pour obtenir un <b>prototype cliquable</b>.</span></li>
+      </ol>
+    </div>
+    <div class="atelier reveal" style="transition-delay:0.3s;">
+      <div class="wire-row" style="gap: clamp(0.4rem,1vw,0.9rem);">
+        <div class="wire-phone" style="border-style:solid; border-color:var(--brand); width: clamp(110px,13vw,170px);">
+          <div class="wf-bar t" style="border-style:solid;"></div>
+          <div class="wf-box" style="border-style:solid; border-color:var(--line);"><span style="font-family:var(--font-display); color:var(--brand); font-size:1rem; font-weight:700;">Hi-fi</span></div>
+          <div class="wf-cta" style="background:var(--brand);"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 30 — ÉTAPE 7 : Tests utilisateurs
+     ==================================================================== -->
+<section class="slide activity" data-title="Étape 7">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>30</strong> / 36</span>
+
+  <div class="slide-content two-col-asym rev">
+    <div class="reveal" style="display:flex; flex-direction:column; gap:0.7rem;">
+      <div class="act-head">
+        <span class="act-eyebrow"><span class="step-pill">7</span> Design sprint · étape 7</span>
+        <h2 class="act-title">Tests utilisateurs</h2>
+        <span class="duration-chip">40 min</span>
+      </div>
+      <ol class="step-list">
+        <li><span class="si">1</span><span>Séparez votre groupe en <b>2</b>.</span></li>
+        <li><span class="si">2</span><span>Un sous-groupe fait <b>tester</b> son travail au groupe voisin.</span></li>
+        <li><span class="si">3</span><span>L'autre va <b>tester</b> le travail d'un autre groupe (1 → teste 2 → teste 3…).</span></li>
+      </ol>
+    </div>
+
+    <div class="reveal" style="transition-delay:0.2s; display:flex; flex-direction:column; gap: clamp(0.6rem,1.2vh,1rem);">
+      <div class="tr-head" style="justify-content:flex-start;">⚑ Les règles du test</div>
+      <div class="tr-grid" style="grid-template-columns:1fr; gap: clamp(0.55rem,1.1vh,0.9rem);">
+        <div class="tr-rule ok"><span class="tr-ico">✓</span><span>Posez des questions <b>ouvertes</b> : « qu'avez-vous pensé de cette étape ? »</span></div>
+        <div class="tr-rule ok"><span class="tr-ico">✓</span><span>Restez <b>neutre</b> : pas de « c'était facile, non ? »</span></div>
+        <div class="tr-rule no"><span class="tr-ico">✕</span><span>Évitez les questions qui <b>orientent</b> la réponse.</span></div>
+        <div class="tr-rule ok"><span class="tr-ico">✓</span><span>Écoutez attentivement, <b>prenez des notes</b>.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 31 — ÉTAPE 8 : Amélioration / itération
+     ==================================================================== -->
+<section class="slide activity" data-title="Étape 8">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>31</strong> / 36</span>
+
+  <div class="slide-content two-col-asym">
+    <div>
+      <div class="act-head reveal">
+        <span class="act-eyebrow"><span class="step-pill">8</span> Design sprint · étape 8</span>
+        <h2 class="act-title">Amélioration &amp; itération</h2>
+        <span class="duration-chip">15 min</span>
+      </div>
+      <ol class="step-list reveal">
+        <li><span class="si">1</span><span>Partagez les <b>feedbacks</b> du test avec votre équipe.</span></li>
+        <li><span class="si">2</span><span>Améliorez votre <b>proposition de valeur</b> et/ou vos <b>parcours</b>.</span></li>
+      </ol>
+    </div>
+    <div class="atelier reveal" style="transition-delay:0.3s; flex-direction:column; gap: clamp(0.7rem,2vh,1.3rem);">
+      <!-- boucle d'itération qui tourne, flèche orientée dans le sens de rotation -->
+      <svg viewBox="0 0 200 200" style="width: clamp(140px,16vw,210px); height: auto;" aria-hidden="true">
+        <g class="iter-spin">
+          <path d="M135,39.4 A70,70 0 1 1 65,39.4" fill="none" stroke="var(--brand)" stroke-width="7" stroke-linecap="round"/>
+          <polygon points="0,-8.5 17,0 0,8.5" fill="var(--brand)" transform="translate(65,39.4) rotate(-30)"/>
+        </g>
+        <text x="100" y="94" text-anchor="middle" font-family="Sora" font-weight="700" font-size="21" fill="var(--secondary)">Test</text>
+        <text x="100" y="121" text-anchor="middle" font-family="Sora" font-weight="700" font-size="21" fill="var(--secondary)">Itère</text>
+      </svg>
+      <p class="iter-caption">Tester → apprendre → ajuster.<br/><b>C'est ça, le design.</b></p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 32 — SECTION 03
+     ==================================================================== -->
+<section class="slide dark moment" data-title="Chapitre 03">
+  <span class="brand-mark" style="color:#fff;">DIGILITYX<span class="dot" style="background:#fff;"></span></span>
+  <span class="slide-meta" style="color:rgba(255,255,255,0.8);"><strong style="color:var(--accent-yellow);">32</strong> / 36</span>
+  <div class="deco-blob" style="background: var(--brand); right: -10%; bottom: -10%; opacity: 0.4;"></div>
+
+  <div class="slide-content section-header" style="align-items:flex-start; text-align:left;">
+    <div class="section-num reveal" style="color: var(--accent-yellow);">03<span class="sep" style="color:#fff; opacity:0.3;">/</span><span style="color:#fff; opacity:0.4;">03</span></div>
+    <div class="eyebrow reveal" style="color: var(--accent-yellow);">Restitution · ≈ 20 min</div>
+    <h2 class="reveal" style="color:#fff; font-size: clamp(2rem, 6vw, 4.6rem); max-width: 16ch;">Session de pitch</h2>
+    <p class="reveal moment-sub" style="text-align:left;">1'30 par groupe pour convaincre. Les autres deviennent le jury.</p>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 33 — PITCHEZ VOTRE PRODUIT (le défi)
+     ==================================================================== -->
+<section class="slide" data-title="Le défi">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>33</strong> / 36</span>
+
+  <div class="slide-content two-col" style="align-items:center;">
+    <div class="reveal" style="display:flex; flex-direction:column; gap:0.6rem;">
+      <div class="eyebrow">Le défi</div>
+      <div class="pitch-timer">1<span class="u">min</span> 30</div>
+      <h2 style="font-size: clamp(1.3rem,2.6vw,2rem);">pour présenter votre produit</h2>
+    </div>
+    <div class="reveal" style="transition-delay:0.2s;">
+      <div class="card" style="border-left:4px solid var(--brand);">
+        <p style="color:var(--text);">Imaginez que nous sommes des <strong>investisseurs</strong>, ou votre <strong>Direction</strong> à convaincre. Vous venez nous expliquer que votre idée est la bonne&nbsp;: elle répond à un vrai besoin, vous avez affiné la proposition de valeur, et vous l'avez incarnée dans une interface <strong>réelle, utile et utilisable</strong>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 34 — STRUCTURE DU PITCH (7 points)
+     ==================================================================== -->
+<section class="slide" data-title="Structure du pitch">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>34</strong> / 36</span>
+
+  <div class="slide-content">
+    <div class="reveal"><div class="eyebrow">Pour vous aider</div><h2 style="margin-top:0.4rem;">La structure de votre pitch</h2></div>
+
+    <div class="pitch-points reveal" style="transition-delay:0.15s;">
+      <div class="pitch-point"><span class="pp-n">1</span><span class="txt">Le <b>nom</b> de votre produit</span></div>
+      <div class="pitch-point"><span class="pp-n">2</span><span class="txt">Qui est votre <b>persona</b> ?</span></div>
+      <div class="pitch-point"><span class="pp-n">3</span><span class="txt">Son <b>besoin</b>, son plus gros problème — et pourquoi ?</span></div>
+      <div class="pitch-point"><span class="pp-n">4</span><span class="txt">Votre <b>proposition de valeur</b></span></div>
+      <div class="pitch-point"><span class="pp-n">5</span><span class="txt">Comment elle <b>répond</b> au problème de départ</span></div>
+      <div class="pitch-point demo"><span class="pp-n">6</span><span class="txt">Comment fonctionne votre solution — <b>démo&nbsp;!</b></span></div>
+      <div class="pitch-point"><span class="pp-n">7</span><span class="txt">Ce que les <b>tests</b> ont révélé, et ce que vous changeriez</span></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 35 — CLÔTURE : Let's go!
+     ==================================================================== -->
+<section class="slide closing" data-title="Let's go!">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>35</strong> / 36</span>
+  <div class="deco-blob" style="background: var(--brand);         right: -15%; top:  -10%; opacity: 0.18;"></div>
+  <div class="deco-blob" style="background: var(--accent-yellow); left:  -15%; bottom: -10%; opacity: 0.30;"></div>
+
+  <div class="slide-content">
+    <div class="eyebrow reveal">À vous de concevoir</div>
+    <h1 class="reveal">Let's <span class="accent">go !</span></h1>
+    <p class="reveal" style="font-size: clamp(1rem, 1.5vw, 1.3rem); color: var(--text-soft); max-width: 50ch;">
+      Du besoin au prototype testé — vous avez la méthode. Maintenant, place au design.
+    </p>
+    <div class="contact-row reveal">
+      <span>alexandre.koch@digilityx.com</span>
+      <span class="sep">·</span>
+      <span>Digilityx · Design Practice</span>
+    </div>
+  </div>
+
+  <svg class="hero-curve" viewBox="0 0 800 500" preserveAspectRatio="xMaxYMax meet" aria-hidden="true" style="opacity: 0.85;">
+    <defs>
+      <linearGradient id="qaCurve1" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%"   stop-color="#da0c0c" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#fdca48" stop-opacity="0.30"/>
+      </linearGradient>
+      <linearGradient id="qaCurve2" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%"   stop-color="#050d2d" stop-opacity="0.06"/>
+        <stop offset="100%" stop-color="#050d2d" stop-opacity="0.16"/>
+      </linearGradient>
+    </defs>
+    <path d="M 800 0   Q 400 100 350 300 T 0 500 L 800 500 Z" fill="url(#qaCurve1)"/>
+    <path d="M 800 100 Q 500 200 450 350 T 100 500 L 800 500 Z" fill="url(#qaCurve2)"/>
+    <circle cx="680" cy="120" r="6" fill="#da0c0c"/>
+    <circle cx="600" cy="80"  r="3" fill="#050d2d"/>
+  </svg>
+</section>
+
+
+<!-- ====================================================================
+     SLIDE 36 — ANNEXE : Grille d'évaluation
+     ==================================================================== -->
+<section class="slide" data-title="Évaluation">
+  <span class="brand-mark">DIGILITYX<span class="dot"></span></span>
+  <span class="slide-meta"><strong>36</strong> / 36</span>
+
+  <div class="slide-content">
+    <div class="reveal"><div class="eyebrow">Annexe · Le jury vous note</div><h2 style="margin-top:0.4rem;">La grille d'évaluation</h2></div>
+
+    <div class="rubric reveal" style="transition-delay:0.15s;">
+      <div class="rubric-row">
+        <div class="rr-crit">Qualité du pitch<span class="rr-sub">timing & codes du pitch</span></div>
+        <div class="rubric-scale"><div class="rs-track"></div><div class="rs-ends"><span class="e0">0 — ne respecte pas le timing</span><span class="e5">5 — pitch fluide, timing tenu</span></div></div>
+      </div>
+      <div class="rubric-row">
+        <div class="rr-crit">Cohérence de la fonctionnalité clé<span class="rr-sub">proposition de valeur</span></div>
+        <div class="rubric-scale"><div class="rs-track"></div><div class="rs-ends"><span class="e0">0 — peu claire / incohérente</span><span class="e5">5 — limpide & cohérente</span></div></div>
+      </div>
+      <div class="rubric-row">
+        <div class="rr-crit">Qualité des écrans<span class="rr-sub">prototype & esthétique</span></div>
+        <div class="rubric-scale"><div class="rs-track"></div><div class="rs-ends"><span class="e0">0 — écrans clés manquants</span><span class="e5">5 — proto fonctionnel & soigné</span></div></div>
+      </div>
+    </div>
+    <p class="rubric-foot reveal" style="transition-delay:0.4s;">Chaque critère s'évalue indépendamment, de 0 à 5 points.</p>
+  </div>
+</section>
+
+
+<script>
+/* =========================================================================
+   CONTRÔLEUR DE PRÉSENTATION (repris de pharma-vision-strategique.html)
+   - Intersection Observer → anime les slides (.visible)
+   - Navigation clavier / tactile / progress bar / nav-dots
+   - Ancre #slide-N pour reprendre après reload
+   ========================================================================= */
+class SlidePresentation {
+  constructor() {
+    this.slides = Array.from(document.querySelectorAll('.slide'));
+    this.currentSlide = 0;
+    this.progressBar = document.getElementById('progressBar');
+    this.navDotsContainer = document.getElementById('navDots');
+
+    this.assignSlideIds();
+    this.buildNavDots();
+    this.setupIntersectionObserver();
+    this.setupKeyboardNav();
+    this.setupTouchNav();
+    this.setupScrollProgress();
+    this.setupFragments();
+    this.restoreFromHash();
+  }
+
+  assignSlideIds() {
+    this.slides.forEach((slide, i) => { if (!slide.id) slide.id = `slide-${i + 1}`; });
+  }
+
+  restoreFromHash() {
+    const hash = location.hash;
+    if (!hash || hash.length < 2) return;
+    const target = document.querySelector(hash);
+    if (!target || !target.classList.contains('slide')) return;
+    const html = document.documentElement;
+    const prev = html.style.scrollBehavior;
+    html.style.scrollBehavior = 'auto';
+    requestAnimationFrame(() => {
+      target.scrollIntoView({ behavior: 'auto', block: 'start' });
+      target.classList.add('visible');
+      requestAnimationFrame(() => { html.style.scrollBehavior = prev; });
+    });
+  }
+
+  buildNavDots() {
+    /* IMPORTANT : on vide d'abord — si le fichier est exporté en mode édition
+       avec les dots déjà rendus, on éviterait ainsi un doublon au rechargement. */
+    this.navDotsContainer.innerHTML = '';
+    this.slides.forEach((slide, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'nav-dot';
+      dot.setAttribute('aria-label', `Slide ${i + 1} : ${slide.dataset.title || ''}`);
+      dot.addEventListener('click', () => this.goTo(i));
+      this.navDotsContainer.appendChild(dot);
+    });
+    this.updateNavDots();
+  }
+
+  updateNavDots() {
+    const dots = this.navDotsContainer.querySelectorAll('.nav-dot');
+    dots.forEach((d, i) => d.classList.toggle('active', i === this.currentSlide));
+  }
+
+  setupIntersectionObserver() {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+          entry.target.classList.add('visible');
+          this.currentSlide = this.slides.indexOf(entry.target);
+          this.updateNavDots();
+          this._updateFragState(entry.target);
+          const id = entry.target.id;
+          if (id && location.hash !== '#' + id) history.replaceState(null, '', '#' + id);
+        }
+      });
+    }, { threshold: [0.5] });
+    this.slides.forEach(s => observer.observe(s));
+  }
+
+  setupKeyboardNav() {
+    document.addEventListener('keydown', (e) => {
+      /* En mode édition de texte, on ne navigue pas */
+      if (e.target.getAttribute && e.target.getAttribute('contenteditable')) return;
+      switch (e.key) {
+        case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+          e.preventDefault(); this.next(); break;
+        case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+          e.preventDefault(); this.prev(); break;
+        case 'Home': e.preventDefault(); this.goTo(0); break;
+        case 'End': e.preventDefault(); this.goTo(this.slides.length - 1); break;
+      }
+    });
+  }
+
+  setupTouchNav() {
+    let startY = 0;
+    document.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; }, { passive: true });
+    document.addEventListener('touchend', (e) => {
+      const deltaY = startY - e.changedTouches[0].clientY;
+      if (Math.abs(deltaY) > 60) { if (deltaY > 0) this.next(); else this.prev(); }
+    }, { passive: true });
+  }
+
+  setupScrollProgress() {
+    const update = () => {
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
+      this.progressBar.style.width = pct + '%';
+    };
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  }
+
+  goTo(index) {
+    const clamped = Math.max(0, Math.min(this.slides.length - 1, index));
+    this.slides[clamped].scrollIntoView({ behavior: 'smooth' });
+  }
+
+  /* === Fragments (build « à la PowerPoint ») ===
+     « Suivant » révèle le prochain .fragment de la slide courante ; quand tous
+     sont visibles, on passe à la slide suivante. « Précédent » masque le dernier
+     fragment révélé, sinon recule d'une slide. */
+  next() {
+    const slide = this.slides[this.currentSlide];
+    const hidden = slide && slide.querySelector('.fragment:not(.frag-visible)');
+    if (hidden) { hidden.classList.add('frag-visible'); this._updateFragState(slide); return; }
+    this.goTo(this.currentSlide + 1);
+  }
+  prev() {
+    const slide = this.slides[this.currentSlide];
+    const shown = slide ? slide.querySelectorAll('.fragment.frag-visible') : [];
+    if (shown.length) { shown[shown.length - 1].classList.remove('frag-visible'); this._updateFragState(slide); return; }
+    this.goTo(this.currentSlide - 1);
+  }
+  _updateFragState(slide) {
+    if (!slide || !slide.querySelector('.fragment')) return;
+    const pending = slide.querySelectorAll('.fragment:not(.frag-visible)').length;
+    slide.classList.toggle('has-pending-frags', pending > 0);
+  }
+  setupFragments() {
+    this.slides.forEach(slide => {
+      if (!slide.querySelector('.fragment')) return;
+      this._updateFragState(slide);
+      /* Clic sur la slide = révéler le fragment suivant (hors éléments interactifs / mode édition) */
+      slide.addEventListener('click', (e) => {
+        if (document.body.classList.contains('edit-active')) return;
+        if (e.target.closest('button, a, input, textarea, [contenteditable], .nav-dots, .edit-toggle, .edit-hotzone')) return;
+        this.next();
+      });
+    });
+  }
+}
+
+/* =========================================================================
+   CAROUSEL DES RÉFÉRENCES (slide 12)
+   Flèches prev/next, points cliquables, légende synchronisée, clavier ←/→
+   quand la slide est visible. Boucle.
+   ========================================================================= */
+function setupRefCarousel() {
+  const viewport = document.getElementById('refViewport');
+  if (!viewport) return;
+  const slides = Array.from(viewport.querySelectorAll('.ref-slide'));
+  const dotsWrap = document.getElementById('refDots');
+  const elClient = document.getElementById('refClient');
+  const elDur = document.getElementById('refDur');
+  const elTitle = document.getElementById('refTitle');
+  const elCounter = document.getElementById('refCounter');
+  let idx = 0;
+
+  // Construire les points
+  dotsWrap.innerHTML = '';
+  slides.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.className = 'rdot' + (i === 0 ? ' active' : '');
+    b.setAttribute('aria-label', 'Référence ' + (i + 1));
+    b.addEventListener('click', () => show(i));
+    dotsWrap.appendChild(b);
+  });
+
+  const pad = (n) => String(n).padStart(2, '0');
+  function show(n) {
+    idx = (n + slides.length) % slides.length;
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    dotsWrap.querySelectorAll('.rdot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    const s = slides[idx];
+    elClient.textContent = s.dataset.client;
+    elDur.textContent = s.dataset.dur;
+    elTitle.textContent = s.dataset.title;
+    elCounter.textContent = pad(idx + 1) + ' / ' + pad(slides.length);
+  }
+
+  document.getElementById('refPrev').addEventListener('click', () => show(idx - 1));
+  document.getElementById('refNext').addEventListener('click', () => show(idx + 1));
+
+  // Flèches clavier quand la slide des références est à l'écran
+  document.addEventListener('keydown', (e) => {
+    if (e.target.getAttribute && e.target.getAttribute('contenteditable')) return;
+    const refSlide = viewport.closest('.slide');
+    const rect = refSlide.getBoundingClientRect();
+    const onScreen = rect.top < window.innerHeight * 0.5 && rect.bottom > window.innerHeight * 0.5;
+    if (!onScreen) return;
+    if (e.key === 'ArrowRight') { e.preventDefault(); e.stopPropagation(); show(idx + 1); }
+    if (e.key === 'ArrowLeft')  { e.preventDefault(); e.stopPropagation(); show(idx - 1); }
+  }, true); // capture : passe avant le contrôleur global
+  show(0);
+}
+
+/* =========================================================================
+   MODE ÉDITION IN-BROWSER (opt-in)
+   - Survol coin haut-gauche (hotzone) ou touche E → bouton crayon
+   - Clic : rend tous les textes editables, Ctrl+S exporte un HTML propre
+   - localStorage : sauvegarde/restaure les modifications de texte
+   ========================================================================= */
+class InlineEditor {
+  constructor() {
+    this.isActive = false;
+    this.toggle = document.getElementById('editToggle');
+    this.banner = document.getElementById('editBanner');
+    /* Sélecteurs de texte éditable */
+    this.selector = 'h1, h2, h3, h4, p, .eyebrow, li span:last-child, .qtext, .qauthor, .team-name, .team-role, .team-xp, .prog-card h3, .pdesc, .pdur, .dt-step h4, .dt-step p, .benefit-card p, .ask-q, .ask-note, .caption-hand, .duration-chip, .act-title, .sub-note, .kf-app, .kf-val, .rc-title, .pitch-point .txt, .rr-crit, .moment-kicker, .day-row .dlabel, .choice-chip, .cg-label, .tool-chip, .demo-callout';
+    this.storageKey = 'designday_edits_v3';
+    this.restore();
+  }
+
+  /* Paires [clé stable, élément] pour chaque texte éditable.
+     La clé = titre de la slide + rang dans la slide → robuste au RÉORDONNANCEMENT
+     des slides (le texte voyage avec sa slide, pas avec un index global). */
+  _entries() {
+    const counters = {};
+    const out = [];
+    document.querySelectorAll(this.selector).forEach(el => {
+      const slide = el.closest('.slide');
+      const title = (slide && slide.dataset.title) ? slide.dataset.title : 'doc';
+      const idx = counters[title] || 0;
+      counters[title] = idx + 1;
+      out.push([title + '::' + idx, el]);
+    });
+    return out;
+  }
+
+  toggleEditMode() {
+    this.isActive ? this.disable() : this.enable();
+  }
+
+  enable() {
+    this.isActive = true;
+    document.body.classList.add('edit-active');
+    this.toggle.classList.add('active', 'show');
+    this.toggle.textContent = '✓';
+    this.banner.classList.add('active');
+    document.querySelectorAll(this.selector).forEach(el => {
+      el.setAttribute('contenteditable', 'true');
+      el.addEventListener('input', this._save = this._save || (() => this.save()));
+    });
+  }
+
+  disable() {
+    this.isActive = false;
+    document.body.classList.remove('edit-active');
+    this.toggle.classList.remove('active');
+    this.toggle.classList.remove('show');
+    this.toggle.textContent = '✏️';
+    this.banner.classList.remove('active');
+    document.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    this.save();
+  }
+
+  /* Sauvegarde le texte de chaque élément éditable, par clé stable */
+  save() {
+    const data = {};
+    this._entries().forEach(([k, el]) => { data[k] = el.innerHTML; });
+    try { localStorage.setItem(this.storageKey, JSON.stringify(data)); } catch (e) {}
+  }
+
+  restore() {
+    let data;
+    try { data = JSON.parse(localStorage.getItem(this.storageKey) || 'null'); } catch (e) { data = null; }
+    if (!data) return;
+    this._entries().forEach(([k, el]) => {
+      /* Ne jamais écraser un élément qui porte une structure de fragments
+         (ex. le quiz « ?? → réponse ») : une sauvegarde antérieure en texte
+         simple corromprait le build. On préserve l'index (l'élément reste
+         compté dans _entries), on saute seulement l'écriture. */
+      if (data[k] !== undefined && !el.querySelector('.fragment')) el.innerHTML = data[k];
+    });
+  }
+
+  /* Export d'un HTML propre (sans état d'édition) */
+  exportFile() {
+    const editableEls = Array.from(document.querySelectorAll('[contenteditable]'));
+    editableEls.forEach(el => el.removeAttribute('contenteditable'));
+    document.body.classList.remove('edit-active');
+    this.toggle.classList.remove('active', 'show');
+    this.banner.classList.remove('active');
+    const wasActive = this.isActive;
+
+    const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
+    if (wasActive) {
+      document.body.classList.add('edit-active');
+      editableEls.forEach(el => el.setAttribute('contenteditable', 'true'));
+      this.toggle.classList.add('active', 'show');
+      this.banner.classList.add('active');
+    }
+
+    const blob = new Blob([html], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'the-design-day.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+}
+
+/* =========================================================================
+   INIT
+   ========================================================================= */
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelector('.slide')?.classList.add('visible');
+  new SlidePresentation();
+  setupRefCarousel();
+
+  const editor = new InlineEditor();
+
+  // 1. Clic sur le bouton crayon
+  editor.toggle.addEventListener('click', () => editor.toggleEditMode());
+
+  // 2. Hotzone coin haut-gauche, avec délai de grâce 400ms
+  const hotzone = document.querySelector('.edit-hotzone');
+  let hideTimeout = null;
+  hotzone.addEventListener('mouseenter', () => { clearTimeout(hideTimeout); editor.toggle.classList.add('show'); });
+  hotzone.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!editor.isActive) editor.toggle.classList.remove('show'); }, 400); });
+  editor.toggle.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+  editor.toggle.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!editor.isActive) editor.toggle.classList.remove('show'); }, 400); });
+
+  // 3. Touche E pour basculer le mode édition
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === 'e' || e.key === 'E') && !(e.target.getAttribute && e.target.getAttribute('contenteditable'))) {
+      editor.toggleEditMode();
+    }
+    // Ctrl/Cmd + S → export
+    if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+      e.preventDefault();
+      editor.exportFile();
+    }
+  });
+});
+</script>
+
+</body>
+</html>
