@@ -361,8 +361,8 @@ p { font-size: var(--body-size); color: var(--text); }
    TEAM — "Animé par" : 4 cartes, photo N&B circulaire (uniformise les fonds)
    ========================================================================= */
 .team-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: clamp(0.75rem, 1.8vw, 1.6rem); flex: 1; align-content: center;
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: clamp(0.6rem, 1.4vw, 1.3rem); flex: 1; align-content: center;
 }
 .team-card {
   background: white; border-radius: var(--card-radius);
@@ -1134,6 +1134,12 @@ body.edit-active [contenteditable]:focus { outline: 2px solid var(--brand); back
         <div class="team-name">Alexandre Koch</div>
         <div class="team-role">Directeur du Design</div>
         <span class="team-xp">13 ans d'XP</span>
+      </div>
+      <div class="team-card">
+        <img class="team-photo" src="design-day-assets/team-louise.png" alt="Louise Berceliot" />
+        <div class="team-name">Louise Berceliot</div>
+        <div class="team-role">Product Manager</div>
+        <span class="team-xp">17 ans d'XP</span>
       </div>
     </div>
   </div>
